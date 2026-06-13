@@ -83,7 +83,6 @@
             text-align: center;
         }
 
-        /* Screens inside Card Back */
         .secure-screen, .message-screen {
             width: 100%;
             display: flex;
@@ -117,7 +116,6 @@
         }
         input:focus, textarea:focus { border-color: #6366f1; }
 
-        /* Buttons */
         button {
             width: 100%;
             padding: 12px;
@@ -157,7 +155,7 @@
             border: 1px dashed #10b981;
             color: #34d399;
         }
-        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 4px; }
+        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -175,16 +173,14 @@
                     <img id="frontImage" src="" class="hidden">
                     <div id="frontPlaceholder" class="placeholder-text">📸<br>यहाँ आपकी फोटो दिखेगी<br><span style="font-size:0.75rem; color:#64748b;">(क्लिक करके पलटें)</span></div>
                 </div>
-                <!-- Back Side (Password/Message) -->
+                <!-- Back Side -->
                 <div class="card-face card-back">
-                    <!-- Password Verification Screen -->
                     <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
                         <h3>🔒 यह मैसेज लॉक है</h3>
                         <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए पासवर्ड डालें</p>
                         <input type="password" id="viewPassword" placeholder="पासवर्ड यहाँ लिखें">
                         <button onclick="unlockMessage()">Unlock Message</button>
                     </div>
-                    <!-- Secret Message Screen -->
                     <div id="messageScreen" class="message-screen hidden">
                         <h3>🎁 आपके लिए संदेश:</h3>
                         <p id="secretText" style="font-size: 1.1rem; color: #f43f5e; margin-top:10px; font-weight:bold; word-break:break-word;"></p>
@@ -193,17 +189,17 @@
             </div>
         </div>
 
-        <!-- Generator Form (यह सिर्फ कार्ड बनाने वाले को दिखेगा) -->
+        <!-- Generator Form -->
         <div class="generator-form" id="editorForm">
             <h3>🛠️ अपना 3D कार्ड कस्टमाइज़ करें</h3>
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
             
             <!-- AI Image Option -->
             <div class="form-group">
-                <label>विकल्प A: AI से फोटो बनाएं (लिखकर बताएं)</label>
-                <input type="text" id="aiPrompt" placeholder="जैसे: A cute cat with a birthday cake">
+                <label>विकल्प A: AI से फोटो बनाएं (English में लिखें)</label>
+                <input type="text" id="aiPrompt" placeholder="जैसे: Cute red kitten playing with wool">
                 <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text">⏳ AI आपकी फोटो बना रहा है, कृपया 5 सेकंड रुकें...</div>
+                <div id="aiLoading" class="loading-text">⏳ AI फोटो लोड हो रही है, कृपया 3-5 सेकंड रुकें...</div>
             </div>
 
             <div style="text-align: center; margin: 10px 0; color: #64748b; font-size: 0.85rem;">— या अपनी फोटो चुनें —</div>
@@ -241,44 +237,53 @@
         let globalPassword = "";
         let globalMessage = "";
 
-        // Card Flip Logic
         function flipCard() {
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        // 1. AI Image Generation Logic (Free API via Pollinations)
+        // 🚀 नया मजबूत AI Image Generator (डबल बैकअप के साथ)
         function generateAIImage() {
             const prompt = document.getElementById('aiPrompt').value.trim();
             if (!prompt) {
-                alert("कृपया AI फोटो बनाने के लिए कुछ टेक्स्ट लिखें!");
+                alert("कृपया AI फोटो बनाने के लिए कुछ टेक्स्ट (Prompt) लिखें!");
                 return;
             }
 
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
-            // Clean prompt for URL
             const encodedPrompt = encodeURIComponent(prompt);
-            const aiImageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=300&height=360&seed=${Math.floor(Math.random() * 1000)}`;
+            const randomSeed = Math.floor(Math.random() * 99999);
+            
+            // Channel 1 (Primary AI URL)
+            const primaryUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=300&height=360&seed=${randomSeed}&enhance=true`;
+            
+            // Channel 2 (Backup AI URL - Unsplash Source)
+            const backupUrl = `https://source.unsplash.com/featured/300x360/?${encodedPrompt}`;
 
-            // Create a temporary image object to preload it
-            const imgLoader = new Image();
-            imgLoader.src = aiImageUrl;
-            imgLoader.onload = function() {
-                const img = document.getElementById('frontImage');
-                img.src = aiImageUrl;
+            const img = document.getElementById('frontImage');
+            
+            // इमेज प्रीलोडिंग टेस्ट
+            const tempImg = new Image();
+            tempImg.src = primaryUrl;
+            
+            tempImg.onload = function() {
+                img.src = primaryUrl;
                 img.classList.remove('hidden');
                 document.getElementById('frontPlaceholder').classList.add('hidden');
                 loading.style.display = 'none';
-                alert("🎉 AI फोटो सफलतापुर्वक बन गई है! ऊपर कार्ड में देखें।");
             };
-            imgLoader.onerror = function() {
+
+            tempImg.onerror = function() {
+                // अगर पहला तरीका फेल हुआ, तो बैकअप चैनल इस्तेमाल करें
+                console.log("Primary AI failed, trying backup channel...");
+                img.src = backupUrl;
+                img.classList.remove('hidden');
+                document.getElementById('frontPlaceholder').classList.add('hidden');
                 loading.style.display = 'none';
-                alert("फोटो बनाने में कोई दिक्कत आई, कृपया दोबारा कोशिश करें।");
             };
         }
 
-        // 2. Normal Image Upload Preview
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -292,7 +297,6 @@
             }
         }
 
-        // 3. Secure Link Generation
         function generateLink() {
             const imgInput = document.getElementById('frontImage').src;
             const msg = document.getElementById('msgInput').value.trim();
@@ -307,7 +311,6 @@
                 return;
             }
 
-            // UTF-8 सपोर्टेड सेफ एन्कोडिंग स्कीम ताकि पासवर्ड कभी गलत न हो
             const cardData = {
                 img: imgInput,
                 msg: btoa(encodeURIComponent(msg)),
@@ -323,15 +326,12 @@
             document.getElementById('finalLink').innerText = finalShareUrl;
             document.getElementById('shareResult').classList.remove('hidden');
             
-            // मेकर के लिए टेस्टिंग आसान बनाने के लिए बैकएंड पासवर्ड सेट कर दिया
             globalPassword = cardData.pass;
             document.getElementById('secretText').innerText = msg;
         }
 
-        // 4. Unlock Logic (Fix Password Error)
         function unlockMessage() {
             const enteredPass = document.getElementById('viewPassword').value.trim();
-            // यूआरएल कंपैटिबल एन्कोडिंग के साथ चेक करें
             if (btoa(encodeURIComponent(enteredPass)) === globalPassword) {
                 document.getElementById('secureScreen').classList.add('hidden');
                 document.getElementById('messageScreen').classList.remove('hidden');
@@ -340,36 +340,31 @@
             }
         }
 
-        // 5. Check if opened via Shared Link
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const cardParam = urlParams.get('card');
 
             if (cardParam) {
                 try {
-                    // अगर कोई शेयर लिंक खोलता है, तो एडिटर फॉर्म छुपा दें
                     document.getElementById('editorForm').classList.add('hidden');
                     
                     const decodedStr = decodeURIComponent(atob(cardParam));
                     const decodedData = JSON.parse(decodedStr);
                     
-                    // इमेज लोड करें
                     const img = document.getElementById('frontImage');
                     img.src = decodedData.img;
                     img.classList.remove('hidden');
                     document.getElementById('frontPlaceholder').classList.add('hidden');
 
-                    // डेटा को सुरक्षित स्टोर करें
                     globalPassword = decodedData.pass;
                     globalMessage = decodeURIComponent(atob(decodedData.msg));
                     
                     document.getElementById('secretText').innerText = globalMessage;
 
                 } catch (e) {
-                    alert("लिंक सही नहीं है या डेटा टूट गया है। नया लिंक बनाएं।");
+                    alert("लिंक सही नहीं है या डेटा टूट गया है।");
                 }
             } else {
-                // अगर आप खुद बना रहे हैं, तो शुरुआत में लॉक स्क्रीन हटाकर रखें
                 document.getElementById('secureScreen').classList.add('hidden');
                 document.getElementById('messageScreen').classList.remove('hidden');
                 document.getElementById('secretText').innerText = "आपका सीक्रेट मैसेज यहाँ दिखेगा।";
