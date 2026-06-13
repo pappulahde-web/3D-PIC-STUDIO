@@ -161,7 +161,7 @@
 <body>
 
     <h1>3D Secret Photo Card</h1>
-    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, फोटो तुरंत लोड होगी!</p>
+    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, सटीक AI फोटो तुरंत बनेगी!</p>
 
     <div class="container">
         
@@ -177,7 +177,7 @@
                 <div class="card-face card-back">
                     <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
                         <h3>🔒 यह मैसेज लॉक है</h3>
-                        <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए密码 डालें</p>
+                        <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए पासवर्ड डालें</p>
                         <input type="password" id="viewPassword" placeholder="पासवर्ड यहाँ लिखें">
                         <button onclick="unlockMessage()">Unlock Message</button>
                     </div>
@@ -199,7 +199,7 @@
                 <label>विकल्प A: AI फोटो (अपनी भाषा में लिखें)</label>
                 <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic या i hate you">
                 <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text">⏳ फोटो लोड हो रही है, कृपया 1 सेकंड रुकें...</div>
+                <div id="aiLoading" class="loading-text">⏳ AI फोटो बना रहा है, कृपया 3-5 सेकंड रुकें...</div>
             </div>
 
             <div style="text-align: center; margin: 10px 0; color: #64748b; font-size: 0.85rem;">— या अपनी फोटो चुनें —</div>
@@ -241,26 +241,28 @@
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        // 🎯 स्मार्ट डिक्शनरी जो 100% इमेज लोड करेगी
+        // 🎯 एडवांस्ड ट्रांसलेशन इंजन जो हिंग्लिश को बिल्कुल सटीक इंग्लिश प्रोम्प्ट में बदलेगा
         function convertHinglishToEnglish(text) {
             let cleanText = text.toLowerCase().trim();
 
             const dictionary = {
-                "cycle ke sath pic": "bicycle,cycle",
-                "cycle ke sath photo": "bicycle,person",
-                "cycle wali pic": "bicycle",
-                "i hate you": "sad,alone",
-                "love you": "heart,love",
-                "gaddi ke sath": "car,luxury",
-                "car ke sath": "car",
-                "sher": "lion",
-                "bhoot": "ghost,scary"
+                "cycle ke sath pic": "A high quality realistic photo of a person standing with a bicycle on a beautiful city road, 4k",
+                "cycle ke sath photo": "A high quality realistic photo of a person standing with a bicycle on a beautiful city road, 4k",
+                "cycle wali pic": "A stylish bicycle parked on a beautiful street autumn leaves on ground",
+                "i hate you": "A dramatic emotional picture of a sad person holding a cardboard sign text written 'I HATE YOU' big letters",
+                "love you": "A romantic creative artwork with glowing red hearts neon lights",
+                "gaddi ke sath": "A young guy standing next to a black luxury modern sports car, photorealistic",
+                "car ke sath": "A young guy standing next to a black luxury modern sports car, photorealistic",
+                "sher": "A majestic cinematic closeup photo of a fierce lion roaring",
+                "bhoot": "A dark scary spooky ghost silhouette in a foggy haunted forest at night"
             };
 
             if (dictionary[cleanText]) {
                 return dictionary[cleanText];
             }
-            return text; // अगर मैच नहीं हुआ तो वही टेक्स्ट भेज देगा
+            
+            // अगर कोई नॉर्मल टेक्स्ट है जो डिक्शनरी में नहीं है, तो उसे सीधा AI जेनरेटर को भेजें
+            return text; 
         }
 
         function generateAIImage() {
@@ -273,20 +275,31 @@
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
-            // हिंग्लिश को कीवर्ड्स में बदलें
+            // 1. हिंग्लिश को परफेक्ट इंग्लिश विजुअल में बदलें
             const translatedPrompt = convertHinglishToEnglish(userPrompt);
-            const randomSeed = Math.floor(Math.random() * 500);
+            const encodedPrompt = encodeURIComponent(translatedPrompt);
+            const randomSeed = Math.floor(Math.random() * 99999);
             
-            // 🚀 Super Fast High-Speed Image URL
-            const aiImageUrl = `https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&h=360&q=80&sig=${randomSeed}&keywords=${encodeURIComponent(translatedPrompt)}`;
+            // 2. 🚀 न्यू 100% वर्किंग लाइव AI जनरेशन API (यह कभी एक ही इमेज बार-बार नहीं दिखाएगा)
+            const aiImageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=300&height=360&seed=${randomSeed}&nologo=true&private=true&model=flux`;
 
             const img = document.getElementById('frontImage');
             
-            // तुरंत इमेज रेंडर करें
-            img.src = aiImageUrl;
-            img.classList.remove('hidden');
-            document.getElementById('frontPlaceholder').classList.add('hidden');
-            loading.style.display = 'none';
+            // इमेज को बैकग्राउंड में प्रीलोड होने दें ताकि ब्लैंक स्क्रीन न दिखे
+            const tempImg = new Image();
+            tempImg.src = aiImageUrl;
+            
+            tempImg.onload = function() {
+                img.src = aiImageUrl;
+                img.classList.remove('hidden');
+                document.getElementById('frontPlaceholder').classList.add('hidden');
+                loading.style.display = 'none';
+            };
+
+            tempImg.onerror = function() {
+                loading.style.display = 'none';
+                alert("सर्वर थोड़ा धीमा है, कृपया एक बार फिर '✨ AI फोटो बनाएं' बटन दबाएं।");
+            };
         }
 
         function previewImage(input) {
