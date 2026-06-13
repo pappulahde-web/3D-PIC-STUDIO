@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Secret Card - Social Share Edition</title>
-    <!-- Font Awesome Link Icons के लिए -->
+    <title>3D Secret Surprise Card</title>
+    
+    <!-- 🌐 OPEN GRAPH TAGS: जब आप इस साइट को Vercel पर डालेंगे, तो यह फोटो WhatsApp पर दिखेगी -->
+    <meta property="og:title" content="🎁 आपके लिए एक सीक्रेट 3D कार्ड आया है!">
+    <meta property="og:description" content="अंदर एक जादुई फोटो और गुप्त संदेश छुपा है। पासवर्ड डालकर अभी खोलें!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500"> <!-- आप यहाँ कोई भी गिफ्ट की फोटो बदल सकते हैं -->
+    <meta property="og:type" content="website">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -81,12 +87,12 @@
         button {
             width: 100%; padding: 11px; color: white; border: none; border-radius: 8px;
             font-size: 0.95rem; font-weight: bold; cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.2s, transform 0.1s;
         }
         button:active { transform: scale(0.98); }
         .ai-btn { background: #10b981; margin-top: 6px; }
-        .share-btn { background: #8b5cf6; margin-top: 10px; }
+        .share-btn { background: #8b5cf6; margin-top: 10px; font-size: 1.05rem; }
 
         .tab-container { display: flex; gap: 10px; margin-bottom: 12px; }
         .tab-btn { background: #334155; padding: 8px; font-size: 0.85rem; }
@@ -104,18 +110,9 @@
             margin-bottom: 12px; max-height: 60px; overflow-y: auto;
         }
 
-        /* Social Icons Buttons Grid */
-        .action-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .copy-action-btn { background: #2563eb; grid-column: span 2; }
-        .copy-action-btn:hover { background: #1d4ed8; }
-        
-        /* Social Colors */
         .whatsapp-btn { background: #22c55e; }
-        .whatsapp-btn:hover { background: #16a34a; }
         .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
         .fb-btn { background: #1877f2; }
         .twitter-btn { background: #000000; border: 1px solid #334155; }
@@ -124,7 +121,7 @@
 <body>
 
     <h1>3D Secret Message Card</h1>
-    <p class="subtitle">कार्ड लॉक करें और किसी भी सोशल मीडिया पर शेयर करें!</p>
+    <p class="subtitle">आकर्षक टेक्स्ट और सोशल शेयरिंग फीचर्स के साथ!</p>
 
     <div class="container">
         <div class="card-container">
@@ -171,26 +168,16 @@
             
             <button class="share-btn" onclick="generateShareableLink()"><i class="fa-solid fa-link"></i> छोटा शेयर लिंक बनाएं</button>
 
-            <!-- Social Media Share Box -->
             <div id="shareResult" class="share-section hidden">
                 <strong>🎉 कार्ड तैयार है! शेयर करें:</strong>
                 <div class="share-link" id="finalLink"></div>
                 
                 <div class="action-btns">
-                    <!-- Copy Button -->
                     <button class="copy-action-btn" id="copyBtn" onclick="copyToClipboard()"><i class="fa-regular fa-copy"></i> Copy Link</button>
-                    
-                    <!-- WhatsApp -->
-                    <button class="whatsapp-btn" onclick="shareSocial('wa')"><i class="fa-brands fa-whatsapp" style="font-size:1.1rem"></i> WhatsApp</button>
-                    
-                    <!-- Instagram (Notice Tip) -->
-                    <button class="insta-btn" onclick="shareSocial('ig')"><i class="fa-brands fa-instagram" style="font-size:1.1rem"></i> Instagram</button>
-                    
-                    <!-- Facebook -->
-                    <button class="fb-btn" onclick="shareSocial('fb')"><i class="fa-brands fa-facebook" style="font-size:1.1rem"></i> Facebook</button>
-                    
-                    <!-- X / Twitter -->
-                    <button class="twitter-btn" onclick="shareSocial('tw')"><i class="fa-brands fa-x-twitter" style="font-size:1.1rem"></i> X / Twitter</button>
+                    <button class="whatsapp-btn" onclick="shareSocial('wa')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+                    <button class="insta-btn" onclick="shareSocial('ig')"><i class="fa-brands fa-instagram"></i> Instagram</button>
+                    <button class="fb-btn" onclick="shareSocial('fb')"><i class="fa-brands fa-facebook"></i> Facebook</button>
+                    <button class="twitter-btn" onclick="shareSocial('tw')"><i class="fa-brands fa-x-twitter"></i> X / Twitter</button>
                 </div>
             </div>
         </div>
@@ -215,7 +202,6 @@
         function uploadToCloud() {
             const file = document.getElementById('imageUploader').files[0];
             if (!file) return;
-
             const loading = document.getElementById('uploadLoading');
             loading.style.display = 'block';
 
@@ -252,7 +238,6 @@
         function generateAIImage() {
             let text = document.getElementById('aiPrompt').value.trim();
             if (!text) { alert("कुछ लिखिए!"); return; }
-
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
@@ -299,22 +284,21 @@
             document.getElementById('shareResult').classList.remove('hidden');
         }
 
-        // 📋 कॉपी क्लिपबोर्ड
         function copyToClipboard() {
             if (!generatedLinkUrl) return;
             navigator.clipboard.writeText(generatedLinkUrl).then(() => {
                 const copyBtn = document.getElementById('copyBtn');
                 copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied! 👍';
-                setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link';
-                }, 2000);
+                setTimeout(() => { copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link'; }, 2000);
             });
         }
 
-        // 🌐 सोशल मीडिया मास्टर शेयरिंग लॉजिक
+        // 🌐 अट्रैक्टिव टेक्स्ट बूस्टर के साथ मास्टर सोशल शेयरिंग लॉजिक
         function shareSocial(platform) {
             if (!generatedLinkUrl) return;
-            const messageText = `🎁 आपके लिए एक सीक्रेट 3D सरप्राइज कार्ड है! देखने के लिए लिंक खोलें: ${generatedLinkUrl}`;
+            
+            // 🔥 यह धमाकेदार टेक्स्ट सामने वाले को क्लिक करने पर मजबूर कर देगा!
+            const messageText = `🎁 *आपके लिए एक सीक्रेट 3D सरप्राइज कार्ड आया है!* \n\n🔒 इसके अंदर एक बहुत ही सुंदर फोटो और गुप्त संदेश छुपाया गया है। \n\n👇 देखने के लिए अभी नीचे दिए गए लिंक को खोलें:\n🔗 ${generatedLinkUrl}`;
             
             if (platform === 'wa') {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`, '_blank');
@@ -323,9 +307,8 @@
             } else if (platform === 'tw') {
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(messageText)}`, '_blank');
             } else if (platform === 'ig') {
-                // इंस्टाग्राम सीधा लिंक शेयर अलाउ नहीं करता, इसलिए कॉपी का रिमाइंड कराएगा
                 copyToClipboard();
-                alert("🔗 लिंक कॉपी कर लिया गया है! अब आप इसे सीधे अपने Instagram Story या DM में पेस्ट करके शेयर कर सकते हैं।");
+                alert("🔗 धमाकेदार लिंक कॉपी कर लिया गया है! अब आप इसे सीधे अपने Instagram Story या DM में पेस्ट करके दोस्तों को चौंका सकते हैं।");
             }
         }
 
