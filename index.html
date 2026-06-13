@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ CRASH-CARD 3D: AI App & Creator</title>
+    
+    <!-- PWA मोबाइल ऐप सपोर्ट मेटा टैग्स -->
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkNyYXNoIENhcmQgM0QiLAogICJzaG9ydF9uYW1lIjogIkNyYXNoQ2FyZCIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjRTBFN0ZGIiwKICAidGhlbWVfY29sb3IiOiAiIzAwMDAwMCIKfQ==">
+
+    <!-- Tailwind CSS और Google Auth स्क्रिप्ट -->
+    <script src="https://tailwindcss.com"></script>
+    <script src="https://google.com" async defer></script>
+    
+    <style>
+        body { font-family: monospace; background-color: #E0E7FF; selection-background-color: #000; }
+        .neo-box { border: 4px solid #000; box-shadow: 4px 4px 0px 0px #000; transition: 0.2s; }
+        .neo-box:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #000; }
+        
+        /* 3D कार्ड फ्लिप रेंडरर */
+        .card-3d-wrap { perspective: 1000px; width: 300px; height: 430px; }
+        .card-3d-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-3d-inner.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 4px solid #000; box-shadow: 6px 6px 0px #000; overflow: hidden; display: flex; flex-direction: column; }
+        .card-back { transform: rotateY(180deg); padding: 20px; justify-content: space-between; }
+
+        /* नियो-ब्रूटलिज्म थीम्स पैटर्न */
+        .theme-lemon { background: #FFF275; color: #000; }
+        .theme-peri { background: #A5B4FC; color: #000; }
+        .theme-rose { background: #FDA4AF; color: #000; }
+        .theme-birthday { background: #fef08a; background-image: radial-gradient(#000 15%, transparent 16%); background-size: 15px 15px; color: #000; }
+        .theme-love { background: #fda4af; background-image: linear-gradient(45deg, #f43f5e 25%, transparent 25%), linear-gradient(-45deg, #f43f5e 25%, transparent 25%); background-size: 20px 20px; color: #000; }
+        .theme-festival { background: #c7d2fe; background-image: linear-gradient(90deg, #6366f1 50%, transparent 50%); background-size: 30px 30px; color: #000; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- हेडर -->
+    <header class="max-w-5xl mx-auto mb-8 bg-white border-4 border-black p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center">
+        <h1 class="text-xl md:text-3xl font-black tracking-tight cursor-pointer" onclick="window.location.hash='/'">⚡ CRASH-CARD 3D</h1>
+        <div id="google-login-btn"></div>
+        <div id="user-profile" class="hidden flex items-center gap-2">
+            <img id="user-img" class="w-8 h-8 rounded-full border-2 border-black" src="">
+            <span id="user-name" class="font-bold text-xs hidden sm:inline"></span>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto">
+        <!-- 1. क्रिएटर पैनल (मेकर मोड) -->
+        <div id="creator-view" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 bg-white border-4 border-black p-6 shadow-[6px_6px_0px_#000] space-y-5">
+                <h2 class="text-lg font-black bg-black text-white px-2 py-1 inline-block uppercase">कंट्रोल डेक (यहाँ बनाएं)</h2>
+                
+                <!-- इमेज सेक्शन -->
+                <div class="space-y-2">
+                    <label class="block font-black text-sm">कदम 1: फोटो सेट करें (AI या अपलोड)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="ai-prompt" placeholder="AI इमेज के लिए प्रॉम्ट लिखें..." class="flex-1 p-2 border-4 border-black font-bold focus:outline-none">
+                        <button onclick="generateAIImage()" class="bg-[#6EE7B7] p-2 border-4 border-black font-black hover:bg-[#34D399] text-xs">AI Generate</button>
+                    </div>
+                    <input type="file" id="file-upload" accept="image/*" class="w-full p-2 border-4 border-black bg-[#A5B4FC] font-black text-xs cursor-pointer">
+                </div>
+
+                <!-- मैसेज और पासवर्ड -->
+                <div class="space-y-2">
+                    <label class="block font-black text-sm">कदम 2: पीछे का सीक्रेट मैसेज</label>
+                    <textarea id="card-message" placeholder="यहाँ अपना सीक्रेट मैसेज टाइप करें..." class="w-full p-2 border-4 border-black font-bold focus:outline-none" rows="2"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block font-black text-sm">कदम 3: पासवर्ड लॉक सेट करें</label>
+                    <input type="password" id="card-password" placeholder="पासवर्ड बनाएं..." class="w-full p-2 border-4 border-black font-bold focus:outline-none">
+                </div>
+
+                <!-- थीम्स चयन -->
+                <div class="space-y-2">
+                    <label class="block font-black text-sm">कदम 4: थीम चुनें</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                        <button onclick="setTheme('lemon')" class="p-1 border-2 border-black font-black text-xs bg-[#FFF275]">Lemon</button>
+                        <button onclick="setTheme('peri')" class="p-1 border-2 border-black font-black text-xs bg-[#A5B4FC]">Peri</button>
+                        <button onclick="setTheme('rose')" class="p-1 border-2 border-black font-black text-xs bg-[#FDA4AF]">Rose</button>
+                        <button onclick="setTheme('birthday')" class="p-1 border-2 border-black font-black text-xs bg-[#fef08a]">Birthday</button>
+                        <button onclick="setTheme('love')" class="p-1 border-2 border-black font-black text-xs bg-[#fda4af] text-red-600">❤ Love</button>
+                        <button onclick="setTheme('festival')" class="p-1 border-2 border-black font-black text-xs bg-[#c7d2fe] text-indigo-700">Festival</button>
+                    </div>
+                </div>
+
+                <button onclick="publishCard()" class="w-full bg-[#FDA4AF] hover:bg-[#F43F5E] p-3 text-lg font-black border-4 border-black shadow-[4px_4px_0px_#000]">🚀 लाइव 3D लिंक जेनरेट करें</button>
+                
+                <!-- आउटपुट लिंक बॉक्स -->
+                <div id="link-box" class="hidden bg-[#6EE7B7] p-3 border-4 border-black space-y-2">
+                    <p class="font-black text-xs">🎉 आपका कार्ड तैयार है! लिंक कॉपी करें और कहीं भी शेयर करें:</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="share-url-output" readonly class="flex-1 bg-white p-2 border-2 border-black text-xs font-bold">
+                        <button onclick="copyLink()" class="bg-white p-2 border-2 border-black font-black text-xs">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- लाइव प्रीव्यू स्क्रीन -->
+            <div class="lg:col-span-5 flex flex-col items-center justify-center bg-white border-4 border-black p-6 shadow-[6px_6px_0px_#000] min-h-[480px]">
+                <p class="text-xs font-black bg-black text-white px-2 py-1 mb-4">LIVE 3D PREVIEW (क्लिक करके घुमाएं)</p>
+                <div class="card-3d-wrap" onclick="document.getElementById('preview-inner').classList.toggle('flipped')">
+                    <div class="card-3d-inner" id="preview-inner">
+                        <div class="card-front">
+                            <img id="preview-img" src="https://picsum.photos" class="w-full h-full object-cover flex-1 bg-gray-200">
+                            <div class="bg-black text-white text-center py-2 font-black text-xs">सामने का हिस्सा (IMAGE)</div>
+                        </div>
+                        <div class="card-back theme-lemon" id="preview-back">
+                            <div class="border-2 border-black p-1 bg-white text-center font-black text-xs">🔒 LOCKED BUFFER</div>
+                            <div class="text-center font-black text-sm my-auto">पासवर्ड डालने पर मैसेज यहाँ दिखेगा!</div>
+                            <div class="text-[10px] text-center font-black border-t border-black pt-1">CRASH-CARD ENGINE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. पब्लिक व्यूअर पैनल (लिंक खोलने पर जो दिखेगा) -->
+        <div id="viewer-view" class="hidden flex flex-col items-center justify-center py-6">
+            <div class="card-3d-wrap mb-6" onclick="toggleViewerFlip()">
+                <div class="card-3d-inner" id="viewer-inner">
+                    <div class="card-front">
+                        <img id="viewer-img" src="" class="w-full h-full object-cover flex-1 bg-gray-200">
+                        <div class="bg-black text-white text-center py-2 font-black text-xs">घुमाने के लिए कार्ड पर क्लिक करें ↺</div>
+                    </div>
+                    <div class="card-back" id="viewer-back" onclick="event.stopPropagation()">
+                        <div class="border-2 border-black p-1 bg-white text-black text-center font-black text-xs">🔒 सुरक्षित संदेश</div>
+                        
+                        <!-- लॉक स्क्रीन फॉर्म -->
+                        <div id="lock-screen" class="space-y-3 bg-white p-4 border-4 border-black my-auto shadow-[2px_2px_0px_#000]">
+                            <p class="text-xs font-black text-center uppercase">यह कार्ड पासवर्ड प्रोटेक्टेड है</p>
+                            <input type="password" id="unlock-pass" placeholder="पासवर्ड दर्ज करें..." class="w-full p-2 border-2 border-black text-center text-xs font-bold focus:outline-none">
+
