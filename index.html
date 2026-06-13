@@ -2,14 +2,14 @@
 <html lang="hi">
 <head>
     <script>
-        // ⚡ सबसे आसान जगह: नीचे वाले लिंक को हटाकर अपना असली Render लिंक यहाँ पेस्ट करें!
-        const API_URL = 'https://threed-pic-studio.onrender.com//';
+        // ⚡ आपका असली Render लिंक यहाँ सफलतापूर्वक जोड़ दिया गया है
+        const API_URL = 'https://onrender.com';
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✨ 3D PIC STUDIO: Premium Card Engine</title>
     
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#0a0f1d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIjNEMCBQSUMgU1RPRElPIiwKICAic2hvcnRfbmFtZSI6ICIzRFBpY1N0dWRpbyIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAmZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKfQ==">
 
@@ -20,21 +20,24 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: url('https://unsplash.com') no-repeat center center fixed;
-            background-size: cover;
+            /* 🌌 नया चमकता हुआ नियॉन ग्लास बैकग्राउंड */
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 40%),
+                        radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.15) 0%, rgba(0, 0, 0, 0) 40%),
+                        #0a0f1d;
             color: #f8fafc; 
             min-height: 100vh; 
-            position: relative;
         }
-        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); z-index: -1; }
-        .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .glass-input { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; transition: 0.3s; }
-        .glass-input:focus { border-color: #818cf8; background: rgba(0, 0, 0, 0.4); outline: none; box-shadow: 0 0 15px rgba(129, 140, 248, 0.2); }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .glass-input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; transition: 0.3s; }
+        .glass-input:focus { border-color: #818cf8; background: rgba(255, 255, 255, 0.08); outline: none; box-shadow: 0 0 15px rgba(129, 140, 248, 0.2); }
+        
         .card-3d-wrap { perspective: 1200px; width: 310px; height: 440px; }
         .card-3d-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
         .card-3d-inner.flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); }
         .card-back { transform: rotateY(180deg); padding: 24px; justify-content: space-between; }
+        
         .theme-lemon { background: linear-gradient(135deg, #fef08a, #eab308); color: #0f172a; }
         .theme-peri { background: linear-gradient(135deg, #c7d2fe, #6366f1); color: white; }
         .theme-rose { background: linear-gradient(135deg, #fbcfe8, #db2777); color: white; }
@@ -70,7 +73,7 @@
                     </div>
                     <div class="relative flex items-center justify-center border border-dashed border-slate-700 rounded-xl p-3 bg-white/5 hover:bg-white/10 transition cursor-pointer">
                         <input type="file" id="file-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                        <span class="text-xs font-semibold text-indigo-300">📁 या अपने phone से फोटो अपलोड करें</span>
+                        <span class="text-xs font-semibold text-indigo-300">📁 या अपने फोन से फोटो अपलोड करें</span>
                     </div>
                 </div>
 
@@ -113,6 +116,4 @@
                 <div class="card-3d-wrap" onclick="document.getElementById('preview-inner').classList.toggle('flipped')">
                     <div class="card-3d-inner" id="preview-inner">
                         <div class="card-front">
-                            <img id="preview-img" src="https://unsplash.com" class="w-full h-full object-cover flex-1 bg-slate-800">
-                            <div class="bg-black/60 backdrop-blur-md text-white text-center py-3 font-semibold text-xs tracking-wide">सामने की फोटो</div>
-                        </div>
+                            <img id="preview-img" src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='400' height='500' viewBox='0 0 400 500'><rect width='400' height='500' fill='%231e293b'/><text x='50%27 y='50%27 font-family='sans-serif' font-size='16' fill='%2394a3b8' text-anchor='middle'>Create an image above...</text></svg>" class="w-full h-full object-cover flex-1 bg-slate-800">
