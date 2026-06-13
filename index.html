@@ -2,41 +2,31 @@
 <html lang="hi">
 <head>
     <script>
-        // ⚡ आपका असली Render लिंक यहाँ सफलतापूर्वक जोड़ दिया गया है
-        const API_URL = 'https://onrender.com';
+        // ⚡ आपका लाइव रेंडर लिंक यहाँ सेट है
+        const API_URL = 'https://threed-pic-studio.onrender.com';
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ 3D PIC STUDIO: Premium Card Engine</title>
-    
-    <meta name="theme-color" content="#0a0f1d">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIjNEMCBQSUMgU1RPRElPIiwKICAic2hvcnRfbmFtZSI6ICIzRFBpY1N0dWRpbyIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAmZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKfQ==">
-
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 3D PIC STUDIO</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://tailwindcss.com"></script>
-    <script src="https://google.com" async defer></script>
-    
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            /* 🌌 नया चमकता हुआ नियॉन ग्लास बैकग्राउंड */
-            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 40%),
-                        radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.15) 0%, rgba(0, 0, 0, 0) 40%),
-                        #0a0f1d;
-            color: #f8fafc; 
-            min-height: 100vh; 
+            background: linear-gradient(135deg, #0a0f1d 0%, #1e1b4b 50%, #2e1065 100%);
+            color: #f8fafc; min-height: 100vh; 
         }
-        
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
-        .glass-input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; transition: 0.3s; }
-        .glass-input:focus { border-color: #818cf8; background: rgba(255, 255, 255, 0.08); outline: none; box-shadow: 0 0 15px rgba(129, 140, 248, 0.2); }
-        
-        .card-3d-wrap { perspective: 1200px; width: 310px; height: 440px; }
-        .card-3d-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; }
+        .glass-input:focus { border-color: #818cf8; outline: none; }
+        .card-3d-wrap { perspective: 1200px; width: 300px; height: 430px; }
+        .card-3d-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
         .card-3d-inner.flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); }
         .card-back { transform: rotateY(180deg); padding: 24px; justify-content: space-between; }
+        
+        .art-bg-default { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
+        .art-bg-hate { background: linear-gradient(135deg, #111827, #dc2626, #000000); }
+        .art-bg-love { background: linear-gradient(135deg, #ec4899, #f43f5e); }
         
         .theme-lemon { background: linear-gradient(135deg, #fef08a, #eab308); color: #0f172a; }
         .theme-peri { background: linear-gradient(135deg, #c7d2fe, #6366f1); color: white; }
@@ -48,72 +38,90 @@
 </head>
 <body class="p-4 md:p-8 flex flex-col justify-between">
 
-    <header class="max-w-6xl w-full mx-auto mb-8 glass-card p-4 flex justify-between items-center px-6">
-        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent cursor-pointer" onclick="window.location.hash='/'">✨ 3D PIC STUDIO</h1>
-        <div id="google-login-btn"></div>
-        <div id="user-profile" class="hidden flex items-center gap-3">
-            <img id="user-img" class="w-9 h-9 rounded-full border border-indigo-400" src="">
-            <span id="user-name" class="font-semibold text-sm hidden sm:inline text-slate-300"></span>
-        </div>
+    <header class="max-w-6xl w-full mx-auto mb-8 glass p-4 flex justify-between items-center px-6">
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">✨ 3D PIC STUDIO</h1>
     </header>
 
-    <main class="max-w-6xl w-full mx-auto flex-1 flex items-center justify-center">
-        <div id="creator-view" class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
-            <div class="lg:col-span-7 glass-card p-6 md:p-8 space-y-6">
-                <div>
-                    <h2 class="text-xl font-bold text-white mb-1">कार्ड डिज़ाइन स्टूडियो</h2>
-                    <p class="text-xs text-slate-400">एनिमेटेड कार्टून, इमोजी और कस्टम टेक्स्ट के साथ 3D कार्ड बनाएं।</p>
+    <main class="max-w-6xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div id="creator-view" class="lg:col-span-7 glass p-6 md:p-8 space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-white mb-1">आर्ट स्टूडियो मेकर</h2>
+                <p class="text-xs text-slate-400">अपना नाम/भावना और कोई भी इमोजी डालें, सिस्टम खुद डिजिटल आर्ट बनाएगा।</p>
+            </div>
+            
+            <div class="space-y-3">
+                <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 1: नाम/भावना लिखें और इमोजी चुनें</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" id="ai-prompt" placeholder="उदा: I HATE YOU, RAHUL, HAPPY BIRTHDAY..." class="p-3 glass-input text-sm focus:outline-none">
+                    <select id="emoji-select" class="p-3 glass-input text-sm focus:outline-none bg-slate-900 text-white">
+                        <option value="😡">😡 गुस्सा (Angry)</option>
+                        <option value="❤️">❤️ प्यार (Love)</option>
+                        <option value="😇">😇 कार्टून स्माइल (Cute)</option>
+                        <option value="🧸">🧸 टेडी बियर (Teddy)</option>
+                        <option value="🎂">🎂 जन्मदिन (Birthday)</option>
+                        <option value="🐱">🐱 बिल्ली कार्टून (Cat)</option>
+                    </select>
                 </div>
-                
+                <button onclick="generateCustomArt()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-2.5 rounded-xl text-xs transition">🎨 3D आर्ट जनरेट करें (Instant)</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label class="block font-semibold text-xs uppercase tracking-wider text-slate-400">कदम 1: मुख्य कवर फोटो (AI या गैलरी)</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="ai-prompt" placeholder="उदा: I hate you 😡, Angry boy animated cartoon 3d emoji..." class="flex-1 p-3 glass-input text-sm">
-                        <button id="ai-btn" onclick="generateAIImage()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 rounded-xl text-xs transition duration-200 min-w-[110px]">AI Generate</button>
-                    </div>
-                    <div class="relative flex items-center justify-center border border-dashed border-slate-700 rounded-xl p-3 bg-white/5 hover:bg-white/10 transition cursor-pointer">
-                        <input type="file" id="file-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                        <span class="text-xs font-semibold text-indigo-300">📁 या अपने फोन से फोटो अपलोड करें</span>
-                    </div>
+                    <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 2: पीछे का सीक्रेट मैसेज</label>
+                    <input type="text" id="card-message" placeholder="यहाँ अपना गुप्त संदेश लिखें..." class="w-full p-3 glass-input text-sm">
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="block font-semibold text-xs uppercase tracking-wider text-slate-400">कदम 2: पीछे का गुप्त संदेश</label>
-                        <input type="text" id="card-message" placeholder="यहाँ अपना संदेश लिखें..." class="w-full p-3 glass-input text-sm">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block font-semibold text-xs uppercase tracking-wider text-slate-400">कदम 3: सुरक्षा लॉक पासवर्ड</label>
-                        <input type="password" id="card-password" placeholder="पासवर्ड सेट करें..." class="w-full p-3 glass-input text-sm">
-                    </div>
-                </div>
-
                 <div class="space-y-2">
-                    <label class="block font-semibold text-xs uppercase tracking-wider text-slate-400">कदम 4: प्रीमियम बैकग्राउंड थीम चुनें</label>
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                        <button onclick="setTheme('lemon')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow-md">Gold</button>
-                        <button onclick="setTheme('peri')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-300 to-indigo-500 text-white shadow-md">Indigo</button>
-                        <button onclick="setTheme('rose')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-300 to-pink-500 text-white shadow-md">Rose</button>
-                        <button onclick="setTheme('birthday')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow-md">Orange</button>
-                        <button onclick="setTheme('love')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow-md">❤ Love</button>
-                        <button onclick="setTheme('festival')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-md">Festival</button>
-                    </div>
-                </div>
-
-                <button onclick="publishCard()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 text-white text-base font-bold p-4 rounded-xl shadow-lg transition duration-300 transform active:scale-[0.99]">🚀 लाइव लिंक जेनरेट करें</button>
-                
-                <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
-                    <p class="font-bold text-xs text-emerald-400">✨ आपका कार्ड इंटरनेट पर लाइव हो गया है! लिंक कॉपी करें:</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
-                        <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition">Copy</button>
-                    </div>
+                    <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 3: सुरक्षा लॉक पासवर्ड</label>
+                    <input type="password" id="card-password" placeholder="पासवर्ड बनाएं..." class="w-full p-3 glass-input text-sm">
                 </div>
             </div>
 
-            <div class="lg:col-span-5 flex flex-col items-center justify-center py-6">
-                <span class="text-[11px] font-bold tracking-widest text-indigo-400 uppercase mb-4 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">3D लाइव प्रीव्यू (क्लिक करें)</span>
-                <div class="card-3d-wrap" onclick="document.getElementById('preview-inner').classList.toggle('flipped')">
-                    <div class="card-3d-inner" id="preview-inner">
-                        <div class="card-front">
-                            <img id="preview-img" src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='400' height='500' viewBox='0 0 400 500'><rect width='400' height='500' fill='%231e293b'/><text x='50%27 y='50%27 font-family='sans-serif' font-size='16' fill='%2394a3b8' text-anchor='middle'>Create an image above...</text></svg>" class="w-full h-full object-cover flex-1 bg-slate-800">
+            <div class="space-y-2">
+                <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">क局कदम 4: बैकग्राउंड थीम चुनें</label>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    <button onclick="setTheme('lemon')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow">Gold</button>
+                    <button onclick="setTheme('peri')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-300 to-indigo-500 text-white shadow">Indigo</button>
+                    <button onclick="setTheme('rose')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-300 to-pink-500 text-white shadow">Rose</button>
+                    <button onclick="setTheme('birthday')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow">Orange</button>
+                    <button onclick="setTheme('love')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow">❤ Love</button>
+                    <button onclick="setTheme('festival')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow">Festival</button>
+                </div>
+            </div>
+
+            <button onclick="publishCard()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 text-white text-base font-bold p-4 rounded-xl shadow-lg transition">🚀 लाइव लिंक जेनरेट करें</button>
+            
+            <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
+                <p class="font-bold text-xs text-emerald-400">✨ आपका कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
+                    <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col items-center justify-center py-6">
+            <span class="text-[11px] font-bold tracking-widest text-indigo-400 uppercase mb-4 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">3D लाइव प्रीव्यू (क्लिक करें)</span>
+            <div class="card-3d-wrap" onclick="document.getElementById('preview-inner').classList.toggle('flipped')">
+                <div class="card-3d-inner" id="preview-inner">
+                    <div class="card-front" id="card-front-render">
+                        <div id="art-container" class="w-full h-full art-bg-default flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+                            <div id="display-emoji" class="text-7xl mb-4 drop-shadow-lg animate-bounce" style="animation-duration: 2s;">😇</div>
+                            <h3 id="display-text" class="text-xl font-extrabold uppercase tracking-wide text-white drop-shadow-md break-all px-2">YOUR STYLE</h3>
+                            <div class="absolute bottom-12 text-[9px] uppercase tracking-widest font-bold opacity-40 text-white">3D PIC STUDIO ORIGINAL</div>
+                        </div>
+                        <div class="bg-black/60 text-white text-center py-2.5 font-semibold text-xs backdrop-blur-md">सामने की फोटो (कवर)</div>
+                    </div>
+                    <div class="card-back theme-lemon" id="preview-back">
+                        <div class="backdrop-blur-md bg-white/20 p-2 rounded-xl text-center font-bold text-xs">🔒 SECURE LOCK</div>
+                        <div class="text-center font-semibold text-sm my-auto px-4">पासवर्ड खोलने पर आपका मैसेज यहाँ दिखाई देगा।</div>
+                        <div class="text-[10px] text-center font-medium opacity-70">3D PIC STUDIO ENGINE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="viewer-view" class="hidden fixed inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-4 z-50">
+        <div class="card-3d-wrap mb-8" onclick="document.getElementById('viewer-inner').classList.toggle('flipped')">
+            <div class="card-3d-inner" id="viewer-inner">
+                <div class="card-front" id="viewer-front-target">
