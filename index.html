@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Card - Upload, AI & Secret Message</title>
+    <title>3D Card - Real AI & Photo Upload</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -118,7 +118,6 @@
         }
         input:focus, textarea:focus { border-color: #6366f1; }
         
-        /* File Upload Styling */
         input[type="file"] {
             background: #0f172a;
             padding: 8px;
@@ -170,7 +169,7 @@
 <body>
 
     <h1>3D Secret Message Card</h1>
-    <p class="subtitle">फोटो अपलोड करें या AI से बनाएं, फिर पीछे मैसेज छुपाएं!</p>
+    <p class="subtitle">आप जो लिखेंगे, असली AI वही फोटो लाइव बनाएगा!</p>
 
     <div class="container">
         
@@ -178,13 +177,13 @@
         <div class="card-container">
             <div class="card" id="mainCard" onclick="flipCard()">
                 
-                <!-- Front Side (Photo) -->
+                <!-- Front Side -->
                 <div class="card-face card-front">
                     <img id="frontImage" src="" class="hidden">
                     <div id="frontPlaceholder" class="placeholder-text">🖼️<br><strong>आपकी फोटो यहाँ दिखेगी</strong><br><span style="font-size:0.75rem; color:#64748b;">(नीचे से अपलोड करें या AI से बनाएं)</span></div>
                 </div>
                 
-                <!-- Back Side (Message Locker) -->
+                <!-- Back Side -->
                 <div class="card-face card-back" onclick="event.stopPropagation();">
                     <div id="secureScreen" class="secure-screen">
                         <h3>🔒 यह संदेश लॉक है</h3>
@@ -204,10 +203,10 @@
 
         <!-- Settings Form -->
         <div class="generator-form">
-            <label>1. फोटो का तरीका चुनें</label>
+            <label>1. फोटो सेट करने का तरीका</label>
             <div class="tab-container">
                 <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')">📁 गैलरी से अपलोड</button>
-                <button class="tab-btn" id="tabAiBtn" onclick="switchTab('ai')">✨ AI से जनरेट करें</button>
+                <button class="tab-btn" id="tabAiBtn" onclick="switchTab('ai')">✨ असली AI जनरेशन</button>
             </div>
 
             <!-- Upload Option -->
@@ -217,17 +216,17 @@
 
             <!-- AI Option -->
             <div id="aiSection" class="form-group hidden">
-                <input type="text" id="aiPrompt" placeholder="जैसे: cycle, sad, car, lion, love...">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ फोटो जनरेट करें</button>
-                <div id="aiLoading" class="loading-text">⏳ फोटो लोड हो रही है...</div>
+                <input type="text" id="aiPrompt" placeholder="जो मन में आए पूरा लिखो (e.g., a boy with sports cycle on mountain)">
+                <button type="button" class="ai-btn" onclick="generateRealAIImage()">✨ लाइव AI फोटो बनाएं</button>
+                <div id="aiLoading" class="loading-text">⏳ AI आपकी सोची हुई फोटो बना रहा है... (4-5 सेकंड रुकें)</div>
             </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
 
             <!-- Message Settings -->
             <div class="form-group">
-                <label>2. सीक्रेट मैसेज (पीछे छुपाने के लिए)</label>
-                <textarea id="msgInput" rows="2" placeholder="यहाँ अपना स्पेशल संदेश लिखें..."></textarea>
+                <label>2. सीक्रेट संदेश (पीछे छुपाने के लिए)</label>
+                <textarea id="msgInput" rows="2" placeholder="यहाँ अपना संदेश लिखें..."></textarea>
             </div>
             
             <div class="form-group">
@@ -250,7 +249,6 @@
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        // टैब स्विचिंग (अपलोड बनाम AI)
         function switchTab(type) {
             if(type === 'upload') {
                 document.getElementById('uploadSection').classList.remove('hidden');
@@ -265,7 +263,7 @@
             }
         }
 
-        // 📁 स्थानीय फोटो अपलोड हैंडलर
+        // 📁 स्थानीय फोटो अपलोड
         function uploadLocalImage() {
             const file = document.getElementById('imageUploader').files[0];
             if (!file) return;
@@ -281,22 +279,11 @@
             reader.readAsDataURL(file);
         }
 
-        // हिंग्लिश कनवर्टर (ताकि Unsplash से सटीक हाई-क्वालिटी मैचिंग इमेज मिले)
-        function getKeywordForUnsplash(text) {
-            let cleanText = text.toLowerCase().trim();
-            if (cleanText.includes("cycle") || cleanText.includes("bicycle")) return "bicycle";
-            if (cleanText.includes("hate") || cleanText.includes("sad") || cleanText.includes("alone")) return "sad-mood";
-            if (cleanText.includes("car") || cleanText.includes("gaddi")) return "sports-car";
-            if (cleanText.includes("sher") || cleanText.includes("lion")) return "lion";
-            if (cleanText.includes("love") || cleanText.includes("heart") || cleanText.includes("pyar")) return "heart-neon";
-            return cleanText.replace(/\s+/g, '-'); 
-        }
-
-        // 🚀 100% वर्किंग और सुपर फ़ास्ट इमेज जनरेटर
-        function generateAIImage() {
+        // 🚀 असली AI इमेज जनरेशन इंजन (Flux Real-Time)
+        function generateRealAIImage() {
             const userPrompt = document.getElementById('aiPrompt').value.trim();
             if (!userPrompt) {
-                alert("कृपया बॉक्स में कुछ लिखें!");
+                alert("कृपया पहले टेक्स्ट बॉक्स में कुछ लिखें!");
                 return;
             }
 
@@ -306,35 +293,27 @@
             
             loading.style.display = 'block';
 
-            const keyword = getKeywordForUnsplash(userPrompt);
-            const randomId = Math.floor(Math.random() * 500);
+            // हर बार नई इमेज बनाने के लिए रैंडम नंबर
+            const randomSeed = Math.floor(Math.random() * 999999);
             
-            // Unsplash Source Engine जो कभी फेल नहीं होगा
-            const imageUrl = `https://images.unsplash.com/photo-${randomId}?q=80&w=320&auto=format&fit=crop&sig=${Math.random()}&blur=0&keyword=${keyword}`;
+            // सीधे यूजर के पूरे इनपुट को बिना छेड़छाड़ किए Flux AI पर भेजना
+            const aiUrl = `https://image.pollinations.ai/p/${encodeURIComponent(userPrompt)}?width=320&height=380&seed=${randomSeed}&model=flux&nologo=true`;
 
-            // बैकग्राउंड प्रीलोडिंग
+            // इमेज को अच्छे से प्री-लोड करना
             const tempImg = new Image();
-            tempImg.src = `https://source.unsplash.com/featured/320x380/?${keyword}&sig=${randomId}`;
+            tempImg.src = aiUrl;
             
-            // अगर डायरेक्ट कीवर्ड काम न करे, तो यह स्टैंडर्ड बैकअप देता है
-            const finalFallbackUrl = `https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?q=80&w=320&height=380&auto=format&fit=crop`;
-
-            img.src = `https://source.unsplash.com/featured/320x380/?${keyword}`;
-            
-            // इसके लोड होने का इंतज़ार करें
-            img.onload = function() {
+            tempImg.onload = function() {
+                img.src = aiUrl;
                 img.classList.remove('hidden');
                 placeholder.classList.add('hidden');
                 loading.style.display = 'none';
                 isPhotoSelected = true;
             };
 
-            img.onerror = function() {
-                img.src = finalFallbackUrl;
-                img.classList.remove('hidden');
-                placeholder.classList.add('hidden');
+            tempImg.onerror = function() {
                 loading.style.display = 'none';
-                isPhotoSelected = true;
+                alert("इमेज जनरेट करने में थोड़ा समय लग रहा है, कृपया एक बार फिर बटन दबाएं।");
             };
         }
 
@@ -358,7 +337,7 @@
             lockCardAgain();
 
             const toast = document.getElementById('statusNotification');
-            toast.innerText = "✅ कार्ड तैयार! अब ऊपर फोटो पर क्लिक करके पासवर्ड टेस्ट करें।";
+            toast.innerText = "✅ कार्ड पूरी तरह तैयार! अब ऊपर फोटो पर क्लिक करके चेक करें।";
             setTimeout(() => { toast.innerText = ""; }, 4000);
         }
 
