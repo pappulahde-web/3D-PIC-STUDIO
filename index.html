@@ -1,165 +1,303 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <script>
-        // ⚡ आपकी लाइव बैकएंड API का लिंक
-        const API_URL = 'https://onrender.com';
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ 3D PIC STUDIO - Premium Digital Art Maker</title>
-    
-    <!-- Google Fonts & Tailwind CSS CDN -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://jsdelivr.net"></script>
-
+    <title>3D Secret Message Card Generator</title>
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: radial-gradient(circle at top right, #1e1b4b 0%, #0f172a 60%, #020617 100%);
-            color: #f8fafc; 
-            min-height: 100vh; 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.45); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        h1 { margin-bottom: 10px; font-size: 2rem; text-align: center; color: #a5b4fc; }
+        p.subtitle { margin-bottom: 30px; color: #94a3b8; text-align: center; }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 500px;
         }
-        .glass-input { 
-            background: rgba(0, 0, 0, 0.5); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: white; 
-            transition: all 0.3s ease;
+
+        /* 3D Card Styling */
+        .card-container {
+            perspective: 1000px;
+            width: 300px;
+            height: 350px;
         }
-        .glass-input:focus { 
-            border-color: #6366f1; 
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
-            outline: none; 
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
         }
-        .card-3d-wrap { perspective: 1500px; width: 320px; height: 460px; }
-        .card-3d-inner { 
-            width: 100%; 
-            height: 100%; 
-            position: relative; 
-            transform-style: preserve-3d; 
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            cursor: pointer; 
+        .card.flipped {
+            transform: rotateY(180deg);
         }
-        .card-3d-inner.flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { 
-            position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            backface-visibility: hidden; 
-            border-radius: 28px; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.1);
+            overflow: hidden;
         }
-        .card-back { transform: rotateY(180deg); padding: 28px; justify-content: space-between; background: #0f172a; }
+        .card-front {
+            background: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .placeholder-text {
+            color: #64748b;
+            text-align: center;
+            padding: 20px;
+        }
+        .card-back {
+            background: linear-gradient(135deg, #311042, #160626);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Password and Message Screen */
+        .secure-screen, .message-screen {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .hidden { display: none !important; }
+
+        /* Form Controls */
+        .generator-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #cbd5e1; }
+        input[type="text"], input[type="password"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover { background: #4f46e5; }
         
-        /* Art Themes & Gradients */
-        .art-bg-default { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
-        .theme-lemon { background: linear-gradient(135deg, #fef08a, #eab308); color: #0f172a; }
-        .theme-peri { background: linear-gradient(135deg, #c7d2fe, #6366f1); color: white; }
-        .theme-rose { background: linear-gradient(135deg, #fbcfe8, #db2777); color: white; }
-        .theme-birthday { background: linear-gradient(135deg, #ffedd5, #f97316); color: white; }
-        .theme-love { background: linear-gradient(135deg, #ffe4e6, #e11d48); color: white; }
-        .theme-festival { background: linear-gradient(135deg, #fae8ff, #a855f7); color: white; }
+        .share-section {
+            background: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .share-link {
+            background: #047857;
+            padding: 8px;
+            border-radius: 5px;
+            word-break: break-all;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            user-select: all;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col justify-between items-center min-h-screen">
+<body>
 
-    <!-- Header Navigation -->
-    <header class="max-w-6xl w-full mx-auto mb-8 glass-panel p-4 rounded-2xl flex justify-between items-center px-6">
-        <div class="flex items-center gap-2">
-            <span class="text-2xl">✨</span>
-            <h1 class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                3D PIC STUDIO
-            </h1>
-        </div>
-    </header>
+    <h1>3D Secret Photo Card</h1>
+    <p class="subtitle">अपनी फोटो लगाएं, पासवर्ड से मैसेज छुपाएं और दोस्तों को शेयर करें!</p>
 
-    <!-- Main Studio Dashboard -->
-    <main class="max-w-6xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
+    <div class="container">
         
-        <!-- Left Side: Creator Tools -->
-        <div id="creator-view" class="lg:col-span-7 glass-panel p-6 md:p-8 rounded-3xl space-y-6">
-            <div>
-                <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">AI Engine Active</span>
-                <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">आर्ट स्टूडियो मेकर</h2>
-                <p class="text-sm text-slate-400">विवरण भरें और लाइव 3D कार्ड जेनरेट करें।</p>
-            </div>
-            
-            <!-- Step 1 -->
-            <div class="space-y-3">
-                <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: नाम और भावना सेट करें</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" id="ai-prompt" oninput="updatePreviewFront()" placeholder="उदा: HAPPY BIRTHDAY, I LOVE YOU..." class="p-3.5 glass-input text-sm rounded-xl">
-                    <select id="emoji-select" onchange="updatePreviewFront()" class="p-3.5 glass-input text-sm rounded-xl bg-slate-900 text-white cursor-pointer">
-                        <option value="❤️">❤️ प्यार (Love)</option>
-                        <option value="😇">😇 कार्टून स्माइल (Cute)</option>
-                        <option value="🧸">🧸 टेडी बियर (Teddy)</option>
-                        <option value="🎂">🎂 जन्मदिन (Birthday)</option>
-                        <option value="😡">😡 गुस्सा (Angry)</option>
-                        <option value="🐱">🐱 बिल्ली कार्टून (Cat)</option>
-                    </select>
+        <!-- 3D Card Display -->
+        <div class="card-container">
+            <div class="card" id="mainCard" onclick="flipCard()">
+                <!-- Front Side (Photo) -->
+                <div class="card-face card-front">
+                    <img id="frontImage" src="" class="hidden">
+                    <div id="frontPlaceholder" class="placeholder-text">📸<br>यहाँ आपकी फोटो दिखेगी<br><small>(क्लिक करके पलटें)</small></div>
                 </div>
-            </div>
-
-            <!-- Step 2 & 3 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 2: पीछे का सीक्रेट मैसेज</label>
-                    <input type="text" id="card-message" oninput="updatePreviewBack()" placeholder="यहाँ अपना गुप्त संदेश लिखें..." class="w-full p-3.5 glass-input text-sm rounded-xl">
-                </div>
-                <div class="space-y-2">
-                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 3: सुरक्षा लॉक पासवर्ड</label>
-                    <input type="password" id="card-password" placeholder="सिक्योरिटी पिन बनाएं..." class="w-full p-3.5 glass-input text-sm rounded-xl">
-                </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="space-y-2">
-                <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 4: प्रीमियम थीम चुनें</label>
-                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                    <button onclick="setTheme('lemon')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow transform hover:scale-105 transition">Gold</button>
-                    <button onclick="setTheme('peri')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow transform hover:scale-105 transition">Indigo</button>
-                    <button onclick="setTheme('rose')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow transform hover:scale-105 transition">Rose</button>
-                    <button onclick="setTheme('birthday')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow transform hover:scale-105 transition">Orange</button>
-                    <button onclick="setTheme('love')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow transform hover:scale-105 transition">❤ Love</button>
-                    <button onclick="setTheme('festival')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow transform hover:scale-105 transition">Festival</button>
-                </div>
-            </div>
-
-            <!-- Publish Button -->
-            <button id="publish-btn" onclick="publishCardToServer()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:brightness-110 text-white text-base font-bold p-4 rounded-xl shadow-lg shadow-indigo-500/20 transition-all cursor-pointer">
-                🚀 लाइव लिंक जेनरेट करें
-            </button>
-            
-            <!-- Dynamic Success Link Box -->
-            <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
-                <p class="font-bold text-xs text-emerald-400 flex items-center gap-1">✨ कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
-                <div class="flex gap-2">
-                    <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2.5 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
-                    <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition cursor-pointer">Copy</button>
+                <!-- Back Side (Password/Message) -->
+                <div class="card-face card-back">
+                    <!-- Password Verification Screen -->
+                    <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
+                        <h3>🔒 यह मैसेज लॉक है</h3>
+                        <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए पासवर्ड डालें</p>
+                        <input type="password" id="viewPassword" placeholder="पासवर्ड यहाँ लिखें">
+                        <button onclick="unlockMessage()">Unlock</button>
+                    </div>
+                    <!-- Secret Message Screen -->
+                    <div id="messageScreen" class="message-screen hidden">
+                        <h3>🎁 आपके लिए संदेश:</h3>
+                        <p id="secretText" style="font-size: 1.2rem; color: #f43f5e; margin-top:10px;"></p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Side: Interactive 3D Preview -->
-        <div class="lg:col-span-5 flex flex-col items-center justify-center py-6">
-            <span class="text-[11px] font-bold tracking-widest text-indigo-400 uppercase mb-4 bg-indigo-500/10 px-4 py-1.5 rounded-full border border-indigo-500/20">
-                3D लाइव प्रीव्यू (टैप करें)
-            </span>
+        <!-- Generator Form (यह सिर्फ मेकर को दिखेगा) -->
+        <div class="generator-form" id="editorForm">
+            <h3>🛠️ अपना 3D कार्ड बनाएं</h3>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
             
-            <div class="card-3d-wrap" onclick="document.getElementById('preview-inner').classList.toggle('flipped')">
-                <div class="card-3d-inner" id="preview-inner">
+            <div class="form-group">
+                <label>1. फ्रंट फोटो अपलोड करें (या इमेज लिंक डालें)</label>
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+            </div>
+            <div class="form-group">
+                <label>2. बैकसाइड का सीक्रेट मैसेज</label>
+                <textarea id="msgInput" rows="3" placeholder="यहाँ अपना स्पेशल मैसेज लिखें..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>3. सुरक्षा पासवर्ड सेट करें</label>
+                <input type="password" id="passInput" placeholder="एक मजबूत पासवर्ड चुनें">
+            </div>
+            <button onclick="generateLink()">🔗 शेयर करने के लिए लिंक बनाएं</button>
+
+            <div id="shareResult" class="share-section hidden">
+                <strong>🎉 आपका 3D कार्ड तैयार है!</strong>
+                <p style="font-size:0.8rem; margin:5px 0;">नीचे दिए लिंक को कॉपी करके Facebook/Instagram पर शेयर करें:</p>
+                <div class="share-link" id="finalLink"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let globalPassword = "";
+        let globalMessage = "";
+
+        // Card Flip Logic
+        function flipCard() {
+            document.getElementById('mainCard').classList.toggle('flipped');
+        }
+
+        // Preview uploaded image
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('frontImage');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById('frontPlaceholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Generate URL with Data (Base64 encoded)
+        function generateLink() {
+            const imgInput = document.getElementById('frontImage').src;
+            const msg = document.getElementById('msgInput').value;
+            const pass = document.getElementById('passInput').value;
+
+            if(!imgInput || !msg || !pass) {
+                alert("कृपया फोटो, मैसेज और पासवर्ड तीनों चीजें भरें!");
+                return;
+            }
+
+            // डेटा को सिक्योर/शॉर्ट रखने के लिए ऑब्जेक्ट बनाया
+            const cardData = {
+                img: imgInput,
+                msg: btoa(unescape(encodeURIComponent(msg))), // सुरक्षित मैसेज एन्कोडिंग
+                pass: btoa(pass) // पासवर्ड एन्कोडिंग
+            };
+
+            // डेटा बहुत बड़ा न हो इसलिए हम लोकलस्टोरेज सिमुलेशन या यूआरएल का उपयोग कर रहे हैं
+            // इंटरनेट पर लाइव होने के बाद यह यूआरएल काम करेगा
+            const jsonStr = JSON.stringify(cardData);
+            const encodedData = btoa(unescape(encodeURIComponent(jsonStr)));
+            
+            const currentUrl = window.location.href.split('?')[0];
+            const finalShareUrl = `${currentUrl}?card=${encodedData}`;
+
+            document.getElementById('finalLink').innerText = finalShareUrl;
+            document.getElementById('shareResult').classList.remove('hidden');
+        }
+
+        // Unlock Secret Message
+        function unlockMessage() {
+            const enteredPass = document.getElementById('viewPassword').value;
+            if (btoa(enteredPass) === globalPassword) {
+                document.getElementById('secureScreen').classList.add('hidden');
+                document.getElementById('messageScreen').classList.remove('hidden');
+            } else {
+                alert("❌ गलत पासवर्ड! दोबारा कोशिश करें।");
+            }
+        }
+
+        // Check if opened via Shared Link
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardParam = urlParams.get('card');
+
+            if (cardParam) {
+                try {
+                    // अगर किसी ने लिंक खोला है, तो फॉर्म छुपा दो और सिर्फ कार्ड दिखाओ
+                    document.getElementById('editorForm').classList.add('hidden');
                     
-                    <!-- Front Design -->
+                    const decodedData = JSON.parse(decodeURIComponent(escape(atob(cardParam))));
+                    
+                    // लोड इमेज
+                    const img = document.getElementById('frontImage');
+                    img.src = decodedData.img;
+                    img.classList.remove('hidden');
+                    document.getElementById('frontPlaceholder').classList.add('hidden');
+
+                    // लोड सीक्रेट्स
+                    globalPassword = decodedData.pass;
+                    globalMessage = decodeURIComponent(escape(atob(decodedData.msg)));
+                    document.getElementById('secretText').innerText = globalMessage;
+
+                } catch (e) {
+                    alert("लिंक सही नहीं है या डेटा करप्ट हो गया है।");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
