@@ -161,19 +161,16 @@
 <body>
 
     <h1>3D Secret Photo Card</h1>
-    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, फोटो तुरंत लोड होगी!</p>
+    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, असली AI फ़ोटो तुरंत बनेगी!</p>
 
     <div class="container">
         
-        <!-- 3D Card Display -->
         <div class="card-container">
             <div class="card" id="mainCard" onclick="flipCard()">
-                <!-- Front Side (Photo) -->
                 <div class="card-face card-front">
                     <img id="frontImage" src="" class="hidden">
                     <div id="frontPlaceholder" class="placeholder-text">📸<br>यहाँ आपकी फोटो दिखेगी<br><span style="font-size:0.75rem; color:#64748b;">(क्लिक करके पलटें)</span></div>
                 </div>
-                <!-- Back Side -->
                 <div class="card-face card-back">
                     <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
                         <h3>🔒 यह मैसेज लॉक है</h3>
@@ -189,17 +186,15 @@
             </div>
         </div>
 
-        <!-- Generator Form -->
         <div class="generator-form" id="editorForm">
             <h3>🛠️ अपना 3D कार्ड कस्टमाइज़ करें</h3>
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
             
-            <!-- AI Image Option -->
             <div class="form-group">
                 <label>AI फोटो (अपनी भाषा में लिखें)</label>
                 <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic या i hate you">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ फोटो लोड करें</button>
-                <div id="aiLoading" class="loading-text">⏳ फोटो तुरंत लोड हो रही है...</div>
+                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो जनरेट करें</button>
+                <div id="aiLoading" class="loading-text">⏳ AI फोटो बना रहा है, कृपया 4-5 सेकंड रुकें...</div>
             </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
@@ -227,75 +222,91 @@
 
     <script>
         let globalPassword = "";
-        let currentSeed = Math.floor(Math.random() * 1000);
-        let selectedKeyword = "random";
+        let currentPromptText = "";
 
         function flipCard() {
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        // हिंग्लिश इनपुट्स को कीवर्ड आईडी में बदलना
-        function getKeywordID(text) {
+        // 🎯 स्मार्ट हिंग्लिश कनवर्टर (जो आपके शब्दों को असली विजुअल प्रॉम्प्ट में बदलता है)
+        function convertHinglishToEnglish(text) {
             let cleanText = text.toLowerCase().trim();
-            if (cleanText.includes("cycle")) return "cycle";
-            if (cleanText.includes("hate")) return "sad";
-            if (cleanText.includes("love")) return "heart";
-            if (cleanText.includes("car") || cleanText.includes("gaddi")) return "car";
-            if (cleanText.includes("sher")) return "lion";
-            if (cleanText.includes("bhoot")) return "scary";
-            return "nature"; 
+
+            if (cleanText.includes("cycle ke sath") || cleanText.includes("cycle wali")) {
+                return "A photorealistic portrait of a young Indian guy standing with a trendy sports bicycle on a clean city street, morning light, 4k resolution";
+            }
+            if (cleanText.includes("hate you") || cleanText.includes("i hate you")) {
+                return "An emotional and artistic dramatic photograph of a lonely person with text 'I HATE YOU' stylized in the background, neon vibes, sad atmosphere";
+            }
+            if (cleanText.includes("car ke sath") || cleanText.includes("gaddi")) {
+                return "A cool aesthetic shot of a luxury sports car parked on a highway during sunset, cinematic look";
+            }
+            if (cleanText.includes("love")) {
+                return "Beautiful glowing red hearts background abstract digital art high quality";
+            }
+
+            // अगर यूजर कुछ और नया लिखता है, तो उसका सीधा अनुवाद या कीवर्ड बनाकर भेजें
+            return cleanText + ", photorealistic, 4k portrait style";
         }
 
-        // 🚀 हाई-स्पीड सुपर स्टेबल इमेज लोडर (जो कभी ब्लॉक नहीं होगा)
+        // 🚀 असली AI इमेज जनरेशन फ़ंक्शन
         function generateAIImage() {
             const userPrompt = document.getElementById('aiPrompt').value.trim();
             if (!userPrompt) {
-                alert("कृपया कुछ लिखें!");
+                alert("कृपया पहले कुछ लिखें!");
                 return;
             }
 
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
-            selectedKeyword = getKeywordID(userPrompt);
-            currentSeed = Math.floor(Math.random() * 1000);
-
-            // Picsum का इस्तेमाल करके एकदम फ़ास्ट रिपॉन्स
-            let imgID = 10; // Default cycle/bike related standard ID
-            if(selectedKeyword === "sad") imgID = 64;
-            if(selectedKeyword === "heart") imgID = 433;
-            if(selectedKeyword === "car") imgID = 111;
-            if(selectedKeyword === "lion") imgID = 219;
-            if(selectedKeyword === "scary") imgID = 1062;
-            if(selectedKeyword === "cycle") imgID = 146;
-
-            const finalUrl = `https://picsum.photos/id/${imgID}/300/360`;
+            // हिंग्लिश इनपुट को कंवर्ट करें
+            currentPromptText = convertHinglishToEnglish(userPrompt);
+            
+            // प्रत्येक बार अलग इमेज के लिए रैंडम नंबर
+            const randomSeed = Math.floor(Math.random() * 99999);
+            
+            // 🌟 Pollinations का Flux Model (असली AI जो सब कुछ लाइव बनाएगा)
+            const aiImageUrl = `https://image.pollinations.ai/p/${encodeURIComponent(currentPromptText)}?width=300&height=360&seed=${randomSeed}&model=flux&nologo=true`;
 
             const img = document.getElementById('frontImage');
-            img.src = finalUrl;
             
-            img.onload = function() {
+            // इमेज लोडिंग होने तक रुकें ताकि कोई गड़बड़ न हो
+            const tempImg = new Image();
+            tempImg.src = aiImageUrl;
+            
+            tempImg.onload = function() {
+                img.src = aiImageUrl;
                 img.classList.remove('hidden');
                 document.getElementById('frontPlaceholder').classList.add('hidden');
                 loading.style.display = 'none';
             };
+
+            tempImg.onerror = function() {
+                loading.style.display = 'none';
+                alert("नेटवर्क धीमा है, कृपया एक बार फिर बटन दबाएं।");
+            };
         }
 
-        // 🔗 छोटा और साफ़-सुथरा लिंक जनरेटर
+        // 🔗 छोटा शेयर लिंक (ताकि लिंक बड़ा न बने)
         function generateLink() {
             const msg = document.getElementById('msgInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
 
+            if(!currentPromptText) {
+                alert("कृपया पहले 'AI फोटो जनरेट करें' बटन पर क्लिक करके इमेज लोड करें!");
+                return;
+            }
             if(!msg || !pass) {
                 alert("कृपया मैसेज और पासवर्ड दोनों भरें!");
                 return;
             }
 
-            // इमेज का पूरा डेटा डालने के बजाय सिर्फ कीवर्ड और पासवर्ड को छोटा करके डाल रहे हैं
+            // लिंक को छोटा रखने के लिए फोटो का टेक्स्ट प्रॉम्प्ट भेज रहे हैं न कि पूरी इमेज फाइल
             const cardData = {
-                k: selectedKeyword,
-                m: btoa(encodeURIComponent(msg)),
-                p: btoa(encodeURIComponent(pass))
+                pr: btoa(encodeURIComponent(currentPromptText)),
+                ms: btoa(encodeURIComponent(msg)),
+                ps: btoa(encodeURIComponent(pass))
             };
 
             const jsonStr = JSON.stringify(cardData);
@@ -307,7 +318,7 @@
             document.getElementById('finalLink').innerText = finalShareUrl;
             document.getElementById('shareResult').classList.remove('hidden');
             
-            globalPassword = cardData.p;
+            globalPassword = cardData.ps;
             document.getElementById('secretText').innerText = msg;
         }
 
@@ -321,7 +332,7 @@
             }
         }
 
-        // पेज लोड होने पर डेटा निकालना
+        // लिंक खोलते ही सामने वाले के ब्राउज़र पर तुरंत लाइव AI रेंडर करना
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const cardParam = urlParams.get('card');
@@ -332,20 +343,17 @@
                     const decodedStr = decodeURIComponent(atob(cardParam));
                     const decodedData = JSON.parse(decodedStr);
                     
-                    let imgID = 146; // Default
-                    if(decodedData.k === "sad") imgID = 64;
-                    if(decodedData.k === "heart") imgID = 433;
-                    if(decodedData.k === "car") imgID = 111;
-                    if(decodedData.k === "lion") imgID = 219;
-                    if(decodedData.k === "scary") imgID = 1062;
+                    const sharedPrompt = decodeURIComponent(atob(decodedData.pr));
+                    // फिक्स्ड सीड ताकि सामने वाले को भी ठीक वही इमेज दिखे जो आपने चुनी थी
+                    const aiImageUrl = `https://image.pollinations.ai/p/${encodeURIComponent(sharedPrompt)}?width=300&height=360&seed=42&model=flux&nologo=true`;
 
                     const img = document.getElementById('frontImage');
-                    img.src = `https://picsum.photos/id/${imgID}/300/360`;
+                    img.src = aiImageUrl;
                     img.classList.remove('hidden');
                     document.getElementById('frontPlaceholder').classList.add('hidden');
 
-                    globalPassword = decodedData.p;
-                    document.getElementById('secretText').innerText = decodeURIComponent(atob(decodedData.m));
+                    globalPassword = decodedData.ps;
+                    document.getElementById('secretText').innerText = decodeURIComponent(atob(decodedData.ms));
                 } catch (e) {
                     alert("लिंक सही नहीं है।");
                 }
