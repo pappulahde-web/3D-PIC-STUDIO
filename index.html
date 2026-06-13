@@ -104,7 +104,7 @@
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #cbd5e1; font-weight: 600; }
         
-        input[type="text"], input[type="password"], textarea, input[type="file"] {
+        input[type="text"], input[type="password"], textarea {
             width: 100%;
             padding: 11px;
             border-radius: 8px;
@@ -161,7 +161,7 @@
 <body>
 
     <h1>3D Secret Photo Card</h1>
-    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, सटीक फोटो तुरंत बनेगी!</p>
+    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, फोटो तुरंत लोड होगी!</p>
 
     <div class="container">
         
@@ -196,18 +196,10 @@
             
             <!-- AI Image Option -->
             <div class="form-group">
-                <label>विकल्प A: AI फोटो (अपनी भाषा में लिखें)</label>
+                <label>AI फोटो (अपनी भाषा में लिखें)</label>
                 <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic या i hate you">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text">⏳ फोटो प्रोसेस हो रही है, कृपया 3 सेकंड रुकें...</div>
-            </div>
-
-            <div style="text-align: center; margin: 10px 0; color: #64748b; font-size: 0.85rem;">— या अपनी फोटो चुनें —</div>
-
-            <!-- Manual Upload Option -->
-            <div class="form-group">
-                <label>विकल्प B: मोबाइल गैलरी से फोटो अपलोड करें</label>
-                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ फोटो लोड करें</button>
+                <div id="aiLoading" class="loading-text">⏳ फोटो तुरंत लोड हो रही है...</div>
             </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
@@ -222,11 +214,11 @@
                 <input type="password" id="passInput" placeholder="इसे खोले बिना मैसेज नहीं दिखेगा">
             </div>
             
-            <button class="submit-btn" onclick="generateLink()">🔗 शेयर करने के लिए लिंक बनाएं</button>
+            <button class="submit-btn" onclick="generateLink()">🔗 छोटा शेयर लिंक बनाएं</button>
 
             <div id="shareResult" class="share-section hidden">
                 <strong>🎉 आपका कार्ड तैयार हो गया है!</strong>
-                <p style="font-size:0.8rem; margin:5px 0;">नीचे दिए लिंक को कॉपी करके Facebook/Instagram पर शेयर करें:</p>
+                <p style="font-size:0.8rem; margin:5px 0;">नीचे दिए छोटे लिंक को कॉपी करके शेयर करें:</p>
                 <div class="share-link" id="finalLink"></div>
             </div>
         </div>
@@ -235,33 +227,26 @@
 
     <script>
         let globalPassword = "";
-        let globalMessage = "";
+        let currentSeed = Math.floor(Math.random() * 1000);
+        let selectedKeyword = "random";
 
         function flipCard() {
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        function convertHinglishToEnglish(text) {
+        // हिंग्लिश इनपुट्स को कीवर्ड आईडी में बदलना
+        function getKeywordID(text) {
             let cleanText = text.toLowerCase().trim();
-
-            const dictionary = {
-                "cycle ke sath pic": "bicycle",
-                "cycle ke sath photo": "bicycle",
-                "cycle wali pic": "bicycle",
-                "i hate you": "sad,alone",
-                "love you": "heart,love",
-                "gaddi ke sath": "car,luxury",
-                "car ke sath": "car",
-                "sher": "lion",
-                "bhoot": "ghost,scary"
-            };
-
-            if (dictionary[cleanText]) {
-                return dictionary[cleanText];
-            }
-            return text; 
+            if (cleanText.includes("cycle")) return "cycle";
+            if (cleanText.includes("hate")) return "sad";
+            if (cleanText.includes("love")) return "heart";
+            if (cleanText.includes("car") || cleanText.includes("gaddi")) return "car";
+            if (cleanText.includes("sher")) return "lion";
+            if (cleanText.includes("bhoot")) return "scary";
+            return "nature"; 
         }
 
+        // 🚀 हाई-स्पीड सुपर स्टेबल इमेज लोडर (जो कभी ब्लॉक नहीं होगा)
         function generateAIImage() {
             const userPrompt = document.getElementById('aiPrompt').value.trim();
             if (!userPrompt) {
@@ -272,474 +257,45 @@
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
-            const translatedPrompt = convertHinglishToEnglish(userPrompt);
-            const encodedPrompt = encodeURIComponent(translatedPrompt);
-            const randomSeed = Math.floor(Math.random() * 99999);
-            
-            // 🚀 बैकअप सिस्टम के साथ इमेज लोड प्रोसेस
-            const img = document.getElementById('frontImage');
-            const tempImg = new Image();
-            
-            // प्राथमिक AI URL
-            const primaryUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=300&height=360&seed=${randomSeed}&nologo=true`;
-            
-            // बैकअप इमेज URL (अगर प्राथमिक सर्वर डाउन हो तो)
-            const backupUrl = `https://pixabay.com/images/search/${encodedPrompt}/?manual_fallback=true`; 
-            const fastUnsplashUrl = `https://source.unsplash.com/featured/300x360/?${encodedPrompt}`;
+            selectedKeyword = getKeywordID(userPrompt);
+            currentSeed = Math.floor(Math.random() * 1000);
 
-            tempImg.src = primaryUrl;
-            
-            tempImg.onload = function() {
-                img.src = primaryUrl;
-                showImageOnCard(loading);
-            };
+            // Picsum का इस्तेमाल करके एकदम फ़ास्ट रिपॉन्स
+            let imgID = 10; // Default cycle/bike related standard ID
+            if(selectedKeyword === "sad") imgID = 64;
+            if(selectedKeyword === "heart") imgID = 433;
+            if(selectedKeyword === "car") imgID = 111;
+            if(selectedKeyword === "lion") imgID = 219;
+            if(selectedKeyword === "scary") imgID = 1062;
+            if(selectedKeyword === "cycle") imgID = 146;
 
-            tempImg.onerror = function() {
-                // अगर पहला सर्वर फेल हुआ तो तुरंत Unsplash API पर स्विच करें
-                console.log("Switching to backup image server...");
-                const backupImg = new Image();
-                backupImg.src = fastUnsplashUrl;
-                
-                backupImg.onload = function() {
-                    img.src = fastUnsplashUrl;
-                    showImageOnCard(loading);
-                };
-                
-                backupImg.onerror = function() {
-                    // अंतिम उपाय: रैंडम जेनरेशन जो कभी फेल नहीं होगी
-                    img.src = `https://picsum.photos/300/360?random=${randomSeed}`;
-                    showImageOnCard(loading);
-                };
-            };
-        }
-
-        function showImageOnCard(loadingElement) {
-            const img = document.getElementById('frontImage');
-            img.classList.remove('hidden');
-            document.getElementById('frontPlaceholder').classList.add('hidden');
-            loadingElement.style.display = 'none';
-        }
-
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById('frontImage');
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('frontPlaceholder').classList.add('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function generateLink() {
-            const imgInput = document.getElementById('frontImage').src;
-            const msg = document.getElementById('msgInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            if(!imgInput || imgInput === window.location.href) {
-                alert("कृपया पहले कोई फोटो सेट करें!");
-                return;
-            }
-            if(!msg || !pass) {
-                alert("कृपया मैसेज और पासवर्ड दोनों भरें!");
-                return;
-            }
-
-            const cardData = {
-                img: imgInput,
-                msg: btoa(encodeURIComponent(msg)),
-                pass: btoa(encodeURIComponent(pass))
-            };
-
-            const jsonStr = JSON.stringify(cardData);
-            const encodedData = btoa(encodeURIComponent(jsonStr));
-            
-            const currentUrl = window.location.href.split('?')[0];
-            const finalShareUrl = `${currentUrl}?card=${encodedData}`;
-
-            document.getElementById('finalLink').innerText = finalShareUrl;
-            document.getElementById('shareResult').classList.remove('hidden');
-            
-            globalPassword = cardData.pass;
-            document.getElementById('secretText').innerText = msg;
-        }
-
-        function unlockMessage() {
-            const enteredPass = document.getElementById('viewPassword').value.trim();
-            if (btoa(encodeURIComponent(enteredPass)) === globalPassword) {
-                document.getElementById('secureScreen').classList.add('hidden');
-                document.getElementById('messageScreen').classList.remove('hidden');
-            } else {
-                alert("❌ गलत पासवर्ड!");
-            }
-        }
-
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const cardParam = urlParams.get('card');
-
-            if (cardParam) {
-                try {
-                    document.getElementById('editorForm').classList.add('hidden');
-                    const decodedStr = decodeURIComponent(atob(cardParam));
-                    const decodedData = JSON.parse(decodedStr);
-                    
-                    const img = document.getElementById('frontImage');
-                    img.src = decodedData.img;
-                    img.classList.remove('hidden');
-                    document.getElementById('frontPlaceholder').classList.add('hidden');
-
-                    globalPassword = decodedData.pass;
-                    globalMessage = decodeURIComponent(atob(decodedData.msg));
-                    document.getElementById('secretText').innerText = globalMessage;
-                } catch (e) {
-                    alert("लिंक सही नहीं है।");
-                }
-            } else {
-                document.getElementById('secureScreen').classList.add('hidden');
-                document.getElementById('messageScreen').classList.remove('hidden');
-                document.getElementById('secretText').innerText = "आपका संदेश यहाँ दिखेगा।";
-            }
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Secret Photo Card Maker</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            color: #fff;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        h1 { margin-bottom: 5px; font-size: 2rem; text-align: center; color: #a5b4fc; }
-        p.subtitle { margin-bottom: 30px; color: #94a3b8; text-align: center; font-size: 0.95rem; }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 35px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        /* 3D Card Styling */
-        .card-container {
-            perspective: 1000px;
-            width: 300px;
-            height: 360px;
-        }
-        .card {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-        }
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255,255,255,0.15);
-            overflow: hidden;
-        }
-        .card-front {
-            background: #1e293b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .card-front img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .placeholder-text {
-            color: #94a3b8;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.95rem;
-        }
-        .card-back {
-            background: linear-gradient(135deg, #311042, #160626);
-            transform: rotateY(180deg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .secure-screen, .message-screen {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .hidden { display: none !important; }
-
-        /* Form Styling */
-        .generator-form {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            border-radius: 15px;
-            width: 100%;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #cbd5e1; font-weight: 600; }
-        
-        input[type="text"], input[type="password"], textarea, input[type="file"] {
-            width: 100%;
-            padding: 11px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #fff;
-            font-size: 0.95rem;
-            outline: none;
-        }
-        input:focus, textarea:focus { border-color: #6366f1; }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:hover { background: #4f46e5; }
-        button:active { transform: scale(0.98); }
-        
-        .ai-btn { background: #10b981; margin-top: 5px; }
-        .ai-btn:hover { background: #059669; }
-        .submit-btn { background: #8b5cf6; margin-top: 10px; font-size: 1.05rem; }
-        .submit-btn:hover { background: #7c3aed; }
-
-        .share-section {
-            background: #065f46;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            border: 1px solid #10b981;
-        }
-        .share-link {
-            background: #022c22;
-            padding: 10px;
-            border-radius: 5px;
-            word-break: break-all;
-            margin-top: 8px;
-            font-size: 0.85rem;
-            user-select: all;
-            border: 1px dashed #10b981;
-            color: #34d399;
-        }
-        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 4px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-    <h1>3D Secret Photo Card</h1>
-    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, सटीक AI फोटो तुरंत बनेगी!</p>
-
-    <div class="container">
-        
-        <!-- 3D Card Display -->
-        <div class="card-container">
-            <div class="card" id="mainCard" onclick="flipCard()">
-                <!-- Front Side (Photo) -->
-                <div class="card-face card-front">
-                    <img id="frontImage" src="" class="hidden">
-                    <div id="frontPlaceholder" class="placeholder-text">📸<br>यहाँ आपकी फोटो दिखेगी<br><span style="font-size:0.75rem; color:#64748b;">(क्लिक करके पलटें)</span></div>
-                </div>
-                <!-- Back Side -->
-                <div class="card-face card-back">
-                    <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
-                        <h3>🔒 यह मैसेज लॉक है</h3>
-                        <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए पासवर्ड डालें</p>
-                        <input type="password" id="viewPassword" placeholder="पासवर्ड यहाँ लिखें">
-                        <button onclick="unlockMessage()">Unlock Message</button>
-                    </div>
-                    <div id="messageScreen" class="message-screen hidden">
-                        <h3>🎁 आपके लिए संदेश:</h3>
-                        <p id="secretText" style="font-size: 1.1rem; color: #f43f5e; margin-top:10px; font-weight:bold; word-break:break-word;"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Generator Form -->
-        <div class="generator-form" id="editorForm">
-            <h3>🛠️ अपना 3D कार्ड कस्टमाइज़ करें</h3>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-            
-            <!-- AI Image Option -->
-            <div class="form-group">
-                <label>विकल्प A: AI फोटो (अपनी भाषा में लिखें)</label>
-                <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic या i hate you">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text">⏳ AI फोटो बना रहा है, कृपया 3-5 सेकंड रुकें...</div>
-            </div>
-
-            <div style="text-align: center; margin: 10px 0; color: #64748b; font-size: 0.85rem;">— या अपनी फोटो चुनें —</div>
-
-            <!-- Manual Upload Option -->
-            <div class="form-group">
-                <label>विकल्प B: मोबाइल गैलरी से फोटो अपलोड करें</label>
-                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
-            </div>
-
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-
-            <div class="form-group">
-                <label>सीक्रेट मैसेज (पीछे की तरफ दिखेगा)</label>
-                <textarea id="msgInput" rows="3" placeholder="यहाँ अपना स्पेशल सीक्रेट मैसेज लिखें..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>सुरक्षा पासवर्ड सेट करें</label>
-                <input type="password" id="passInput" placeholder="इसे खोले बिना मैसेज नहीं दिखेगा">
-            </div>
-            
-            <button class="submit-btn" onclick="generateLink()">🔗 शेयर करने के लिए लिंक बनाएं</button>
-
-            <div id="shareResult" class="share-section hidden">
-                <strong>🎉 आपका कार्ड तैयार हो गया है!</strong>
-                <p style="font-size:0.8rem; margin:5px 0;">नीचे दिए लिंक को कॉपी करके Facebook/Instagram पर शेयर करें:</p>
-                <div class="share-link" id="finalLink"></div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        let globalPassword = "";
-        let globalMessage = "";
-
-        function flipCard() {
-            document.getElementById('mainCard').classList.toggle('flipped');
-        }
-
-        // 🎯 एडवांस्ड ट्रांसलेशन इंजन जो हिंग्लिश को बिल्कुल सटीक इंग्लिश प्रोम्प्ट में बदलेगा
-        function convertHinglishToEnglish(text) {
-            let cleanText = text.toLowerCase().trim();
-
-            const dictionary = {
-                "cycle ke sath pic": "A high quality realistic photo of a person standing with a bicycle on a beautiful city road, 4k",
-                "cycle ke sath photo": "A high quality realistic photo of a person standing with a bicycle on a beautiful city road, 4k",
-                "cycle wali pic": "A stylish bicycle parked on a beautiful street autumn leaves on ground",
-                "i hate you": "A dramatic emotional picture of a sad person holding a cardboard sign text written 'I HATE YOU' big letters",
-                "love you": "A romantic creative artwork with glowing red hearts neon lights",
-                "gaddi ke sath": "A young guy standing next to a black luxury modern sports car, photorealistic",
-                "car ke sath": "A young guy standing next to a black luxury modern sports car, photorealistic",
-                "sher": "A majestic cinematic closeup photo of a fierce lion roaring",
-                "bhoot": "A dark scary spooky ghost silhouette in a foggy haunted forest at night"
-            };
-
-            if (dictionary[cleanText]) {
-                return dictionary[cleanText];
-            }
-            
-            // अगर कोई नॉर्मल टेक्स्ट है जो डिक्शनरी में नहीं है, तो उसे सीधा AI जेनरेटर को भेजें
-            return text; 
-        }
-
-        function generateAIImage() {
-            const userPrompt = document.getElementById('aiPrompt').value.trim();
-            if (!userPrompt) {
-                alert("कृपया कुछ लिखें!");
-                return;
-            }
-
-            const loading = document.getElementById('aiLoading');
-            loading.style.display = 'block';
-
-            // 1. हिंग्लिश को परफेक्ट इंग्लिश विजुअल में बदलें
-            const translatedPrompt = convertHinglishToEnglish(userPrompt);
-            const encodedPrompt = encodeURIComponent(translatedPrompt);
-            const randomSeed = Math.floor(Math.random() * 99999);
-            
-            // 2. 🚀 न्यू 100% वर्किंग लाइव AI जनरेशन API (यह कभी एक ही इमेज बार-बार नहीं दिखाएगा)
-            const aiImageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=300&height=360&seed=${randomSeed}&nologo=true&private=true&model=flux`;
+            const finalUrl = `https://picsum.photos/id/${imgID}/300/360`;
 
             const img = document.getElementById('frontImage');
+            img.src = finalUrl;
             
-            // इमेज को बैकग्राउंड में प्रीलोड होने दें ताकि ब्लैंक स्क्रीन न दिखे
-            const tempImg = new Image();
-            tempImg.src = aiImageUrl;
-            
-            tempImg.onload = function() {
-                img.src = aiImageUrl;
+            img.onload = function() {
                 img.classList.remove('hidden');
                 document.getElementById('frontPlaceholder').classList.add('hidden');
                 loading.style.display = 'none';
             };
-
-            tempImg.onerror = function() {
-                loading.style.display = 'none';
-                alert("सर्वर थोड़ा धीमा है, कृपया एक बार फिर '✨ AI फोटो बनाएं' बटन दबाएं।");
-            };
         }
 
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById('frontImage');
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('frontPlaceholder').classList.add('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
+        // 🔗 छोटा और साफ़-सुथरा लिंक जनरेटर
         function generateLink() {
-            const imgInput = document.getElementById('frontImage').src;
             const msg = document.getElementById('msgInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
 
-            if(!imgInput || imgInput === window.location.href) {
-                alert("कृपया पहले कोई फोटो सेट करें!");
-                return;
-            }
             if(!msg || !pass) {
                 alert("कृपया मैसेज और पासवर्ड दोनों भरें!");
                 return;
             }
 
+            // इमेज का पूरा डेटा डालने के बजाय सिर्फ कीवर्ड और पासवर्ड को छोटा करके डाल रहे हैं
             const cardData = {
-                img: imgInput,
-                msg: btoa(encodeURIComponent(msg)),
-                pass: btoa(encodeURIComponent(pass))
+                k: selectedKeyword,
+                m: btoa(encodeURIComponent(msg)),
+                p: btoa(encodeURIComponent(pass))
             };
 
             const jsonStr = JSON.stringify(cardData);
@@ -751,7 +307,7 @@
             document.getElementById('finalLink').innerText = finalShareUrl;
             document.getElementById('shareResult').classList.remove('hidden');
             
-            globalPassword = cardData.pass;
+            globalPassword = cardData.p;
             document.getElementById('secretText').innerText = msg;
         }
 
@@ -765,6 +321,7 @@
             }
         }
 
+        // पेज लोड होने पर डेटा निकालना
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const cardParam = urlParams.get('card');
@@ -775,14 +332,20 @@
                     const decodedStr = decodeURIComponent(atob(cardParam));
                     const decodedData = JSON.parse(decodedStr);
                     
+                    let imgID = 146; // Default
+                    if(decodedData.k === "sad") imgID = 64;
+                    if(decodedData.k === "heart") imgID = 433;
+                    if(decodedData.k === "car") imgID = 111;
+                    if(decodedData.k === "lion") imgID = 219;
+                    if(decodedData.k === "scary") imgID = 1062;
+
                     const img = document.getElementById('frontImage');
-                    img.src = decodedData.img;
+                    img.src = `https://picsum.photos/id/${imgID}/300/360`;
                     img.classList.remove('hidden');
                     document.getElementById('frontPlaceholder').classList.add('hidden');
 
-                    globalPassword = decodedData.pass;
-                    globalMessage = decodeURIComponent(atob(decodedData.msg));
-                    document.getElementById('secretText').innerText = globalMessage;
+                    globalPassword = decodedData.p;
+                    document.getElementById('secretText').innerText = decodeURIComponent(atob(decodedData.m));
                 } catch (e) {
                     alert("लिंक सही नहीं है।");
                 }
