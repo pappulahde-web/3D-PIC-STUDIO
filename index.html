@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Secret Card - Perfect Dynamic Edition</title>
+    <title>3D Secret Card - Social Share Edition</title>
+    <!-- Font Awesome Link Icons के लिए -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -80,6 +82,7 @@
             width: 100%; padding: 11px; color: white; border: none; border-radius: 8px;
             font-size: 0.95rem; font-weight: bold; cursor: pointer;
             transition: background 0.2s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         button:active { transform: scale(0.98); }
         .ai-btn { background: #10b981; margin-top: 6px; }
@@ -90,36 +93,54 @@
         .tab-btn.active { background: #6366f1; }
         .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 5px; font-weight: bold; }
         
+        /* Share Result Box */
         .share-section {
             background: #065f46; padding: 15px; border-radius: 8px; margin-top: 15px;
             text-align: center; border: 1px solid #10b981;
         }
         .share-link {
             background: #022c22; padding: 10px; border-radius: 5px; word-break: break-all;
-            margin-top: 8px; font-size: 0.85rem; user-select: all; border: 1px dashed #34d399; color: #34d399;
+            margin-top: 8px; font-size: 0.85rem; border: 1px dashed #34d399; color: #34d399;
+            margin-bottom: 12px; max-height: 60px; overflow-y: auto;
         }
+
+        /* Social Icons Buttons Grid */
+        .action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .copy-action-btn { background: #2563eb; grid-column: span 2; }
+        .copy-action-btn:hover { background: #1d4ed8; }
+        
+        /* Social Colors */
+        .whatsapp-btn { background: #22c55e; }
+        .whatsapp-btn:hover { background: #16a34a; }
+        .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .fb-btn { background: #1877f2; }
+        .twitter-btn { background: #000000; border: 1px solid #334155; }
     </style>
 </head>
 <body>
 
     <h1>3D Secret Message Card</h1>
-    <p class="subtitle">हिंदी/हिंग्लिश में लिखो, AI सही फोटो बनाएगा। अपलोड का लिंक भी छोटा आएगा!</p>
+    <p class="subtitle">कार्ड लॉक करें और किसी भी सोशल मीडिया पर शेयर करें!</p>
 
     <div class="container">
         <div class="card-container">
             <div class="card" id="mainCard" onclick="flipCard()">
                 <div class="card-face card-front">
                     <img id="frontImage" src="" class="hidden">
-                    <div id="frontPlaceholder" class="placeholder-text">🖼️<br><strong>फोटो यहाँ दिखेगी</strong></div>
+                    <div id="frontPlaceholder" class="placeholder-text"><i class="fa-regular fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i><br><strong>फोटो यहाँ दिखेगी</strong></div>
                 </div>
                 <div class="card-face card-back" onclick="event.stopPropagation();">
                     <div id="secureScreen" class="secure-screen">
-                        <h3>🔒 यह संदेश लॉक है</h3>
+                        <h3><i class="fa-solid fa-lock"></i> यह संदेश लॉक है</h3>
                         <input type="password" id="viewPassword" placeholder="पासवर्ड डालें">
-                        <button style="background:#ec4899;" onclick="unlockMessage()">Unlock</button>
+                        <button style="background:#ec4899;" onclick="unlockMessage()"><i class="fa-solid fa-unlock"></i> Unlock</button>
                     </div>
                     <div id="messageScreen" class="message-screen hidden">
-                        <h3>🎁 संदेश:</h3>
+                        <h3><i class="fa-solid fa-gift"></i> संदेश:</h3>
                         <p id="secretText" style="font-size: 1.1rem; color: #f43f5e; font-weight:bold;"></p>
                     </div>
                 </div>
@@ -129,30 +150,48 @@
         <div class="generator-form" id="editorForm">
             <label>1. फोटो का तरीका</label>
             <div class="tab-container">
-                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')">📁 गैलरी अपलोड</button>
-                <button class="tab-btn" id="tabAiBtn" onclick="switchTab('ai')">✨ AI जनरेशन</button>
+                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')"><i class="fa-solid fa-folder-open"></i> गैलरी अपलोड</button>
+                <button class="tab-btn" id="tabAiBtn" onclick="switchTab('ai')"><i class="fa-solid fa-wand-magic-sparkles"></i> AI जनरेशन</button>
             </div>
 
             <div id="uploadSection" class="form-group">
                 <input type="file" id="imageUploader" accept="image/*" onchange="uploadToCloud()">
-                <div id="uploadLoading" class="loading-text">⏳ फोटो अपलोड हो रही है, छोटा लिंक बन रहा है...</div>
+                <div id="uploadLoading" class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> फोटो अपलोड हो रही है...</div>
             </div>
 
             <div id="aiSection" class="form-group hidden">
-                <input type="text" id="aiPrompt" placeholder="जैसे: red car on mountain, rota hua ladka...">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text">⏳ AI आपकी भाषा समझकर फोटो बना रहा है...</div>
+                <input type="text" id="aiPrompt" placeholder="जैसे: red car on mountain...">
+                <button type="button" class="ai-btn" onclick="generateAIImage()"><i class="fa-solid fa-bolt"></i> फोटो बनाएं</button>
+                <div id="aiLoading" class="loading-text"><i class="fa-solid fa-circle-notch fa-spin"></i> AI काम कर रहा है...</div>
             </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-            <div class="form-group"><label>2. सीक्रेट संदेश</label><textarea id="msgInput" rows="2"></textarea></div>
-            <div class="form-group"><label>3. पासवर्ड</label><input type="password" id="passInput"></div>
+            <div class="form-group"><label>2. सीक्रेट संदेश</label><textarea id="msgInput" rows="2" placeholder="चिट्ठी यहाँ लिखें..."></textarea></div>
+            <div class="form-group"><label>3. पासवर्ड</label><input type="password" id="passInput" placeholder="पासवर्ड चुनें"></div>
             
-            <button class="share-btn" onclick="generateShareableLink()">🔗 छोटा शेयर लिंक बनाएं</button>
+            <button class="share-btn" onclick="generateShareableLink()"><i class="fa-solid fa-link"></i> छोटा शेयर लिंक बनाएं</button>
 
+            <!-- Social Media Share Box -->
             <div id="shareResult" class="share-section hidden">
-                <strong>🎉 कार्ड तैयार है! लिंक कॉपी करें:</strong>
+                <strong>🎉 कार्ड तैयार है! शेयर करें:</strong>
                 <div class="share-link" id="finalLink"></div>
+                
+                <div class="action-btns">
+                    <!-- Copy Button -->
+                    <button class="copy-action-btn" id="copyBtn" onclick="copyToClipboard()"><i class="fa-regular fa-copy"></i> Copy Link</button>
+                    
+                    <!-- WhatsApp -->
+                    <button class="whatsapp-btn" onclick="shareSocial('wa')"><i class="fa-brands fa-whatsapp" style="font-size:1.1rem"></i> WhatsApp</button>
+                    
+                    <!-- Instagram (Notice Tip) -->
+                    <button class="insta-btn" onclick="shareSocial('ig')"><i class="fa-brands fa-instagram" style="font-size:1.1rem"></i> Instagram</button>
+                    
+                    <!-- Facebook -->
+                    <button class="fb-btn" onclick="shareSocial('fb')"><i class="fa-brands fa-facebook" style="font-size:1.1rem"></i> Facebook</button>
+                    
+                    <!-- X / Twitter -->
+                    <button class="twitter-btn" onclick="shareSocial('tw')"><i class="fa-brands fa-x-twitter" style="font-size:1.1rem"></i> X / Twitter</button>
+                </div>
             </div>
         </div>
     </div>
@@ -161,6 +200,7 @@
         let globalPassword = "";
         let finalImageSource = ""; 
         let imageMode = "upload";
+        let generatedLinkUrl = "";
 
         function flipCard() { document.getElementById('mainCard').classList.toggle('flipped'); }
         function switchTab(type) {
@@ -171,7 +211,7 @@
             document.getElementById('tabAiBtn').classList.toggle('active', type === 'ai');
         }
 
-        // 📁 गैलरी अपलोड - अब फाइल को सीधे फ्री होस्टिंग (tmpfiles.org) पर भेजकर छोटा लिंक बनाएगा
+        // 📁 क्लाउड अपलोड
         function uploadToCloud() {
             const file = document.getElementById('imageUploader').files[0];
             if (!file) return;
@@ -185,14 +225,12 @@
             fetch("https://tmpfiles.org/api/v1/upload", { method: "POST", body: formData })
             .then(res => res.json())
             .then(data => {
-                // tmpfiles.org का यूआरएल कन्वर्ट करना पड़ता है डायरेक्ट इमेज में
                 let rawUrl = data.data.url; 
                 finalImageSource = rawUrl.replace("tmpfiles.org/", "tmpfiles.org/dl/");
                 displayImage(finalImageSource);
                 loading.style.display = 'none';
             })
             .catch(() => {
-                // अगर इंटरनेट स्लो हो तो बैकअप लोकल मेथड (लिंक थोड़ा बड़ा हो सकता है लेकिन काम करेगा)
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     finalImageSource = e.target.result;
@@ -210,7 +248,7 @@
             document.getElementById('frontPlaceholder').classList.add('hidden');
         }
 
-        // ✨ स्मार्ट AI जनरेशन - हिंग्लिश/हिंदी को इंग्लिश में समझने की ट्रिक के साथ
+        // ✨ AI जनरेशन
         function generateAIImage() {
             let text = document.getElementById('aiPrompt').value.trim();
             if (!text) { alert("कुछ लिखिए!"); return; }
@@ -218,15 +256,11 @@
             const loading = document.getElementById('aiLoading');
             loading.style.display = 'block';
 
-            // हिंग्लिश के कॉमन शब्दों को बैकएंड पर इंग्लिश में मैप करना (ताकि AI समझे)
-            let lowerText = text.toLowerCase();
             let englishPrompt = text;
-
             const dictionary = {
                 "ladka": "boy", "ladki": "girl", "sher": "lion", "gadi": "car", "gaddi": "car",
-                "rota": "crying", "ronda": "crying", "sad": "sad mood", "khush": "happy",
-                "pahar": "mountain", "pani": "water", "barish": "rain", "dil": "heart shape",
-                "cycle": "bicycle", "cycle par": "riding a bicycle"
+                "rota": "crying", "sad": "sad mood", "khush": "happy", "pahar": "mountain", 
+                "barish": "rain", "dil": "heart shape", "cycle": "bicycle"
             };
 
             Object.keys(dictionary).forEach(key => {
@@ -235,7 +269,6 @@
             });
 
             const randomSeed = Math.floor(Math.random() * 99999);
-            // अब एकदम सटीक 'Flux' मॉडल पर साफ इमेज जनरेट होगी
             finalImageSource = `https://image.pollinations.ai/p/${encodeURIComponent(englishPrompt)}?width=320&height=380&seed=${randomSeed}&model=flux&nologo=true`;
 
             const temp = new Image();
@@ -246,7 +279,7 @@
             };
         }
 
-        // 🔗 छोटा शेयर लिंक जनरेटर
+        // 🔗 लिंक जनरेटर
         function generateShareableLink() {
             const msg = document.getElementById('msgInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
@@ -254,16 +287,46 @@
             if (!finalImageSource) { alert("पहले फोटो सेट करें!"); return; }
             if (!msg || !pass) { alert("संदेश और पासवर्ड भरें!"); return; }
 
-            // डेटा को कंप्रेस करके यूआरएल में छोटा करना
             const pack = {
                 img: btoa(encodeURIComponent(finalImageSource)),
                 msg: btoa(encodeURIComponent(msg)),
                 pas: btoa(encodeURIComponent(pass))
             };
 
-            const finalShareUrl = `${window.location.href.split('?')[0]}?card=${btoa(encodeURIComponent(JSON.stringify(pack)))}`;
-            document.getElementById('finalLink').innerText = finalShareUrl;
+            generatedLinkUrl = `${window.location.href.split('?')[0]}?card=${btoa(encodeURIComponent(JSON.stringify(pack)))}`;
+            document.getElementById('finalLink').innerText = generatedLinkUrl;
+            document.getElementById('copyBtn').innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link';
             document.getElementById('shareResult').classList.remove('hidden');
+        }
+
+        // 📋 कॉपी क्लिपबोर्ड
+        function copyToClipboard() {
+            if (!generatedLinkUrl) return;
+            navigator.clipboard.writeText(generatedLinkUrl).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied! 👍';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link';
+                }, 2000);
+            });
+        }
+
+        // 🌐 सोशल मीडिया मास्टर शेयरिंग लॉजिक
+        function shareSocial(platform) {
+            if (!generatedLinkUrl) return;
+            const messageText = `🎁 आपके लिए एक सीक्रेट 3D सरप्राइज कार्ड है! देखने के लिए लिंक खोलें: ${generatedLinkUrl}`;
+            
+            if (platform === 'wa') {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`, '_blank');
+            } else if (platform === 'fb') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(generatedLinkUrl)}`, '_blank');
+            } else if (platform === 'tw') {
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(messageText)}`, '_blank');
+            } else if (platform === 'ig') {
+                // इंस्टाग्राम सीधा लिंक शेयर अलाउ नहीं करता, इसलिए कॉपी का रिमाइंड कराएगा
+                copyToClipboard();
+                alert("🔗 लिंक कॉपी कर लिया गया है! अब आप इसे सीधे अपने Instagram Story या DM में पेस्ट करके शेयर कर सकते हैं।");
+            }
         }
 
         function unlockMessage() {
@@ -274,7 +337,6 @@
             } else { alert("गलत पासवर्ड!"); }
         }
 
-        // 🌐 लिंक ओपनर लॉजिक
         window.onload = function() {
             const cardParam = new URLSearchParams(window.location.search).get('card');
             if (cardParam) {
