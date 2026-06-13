@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Secret Photo Card Maker</title>
+    <title>3D Card - Live AI & Secret Message</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -23,16 +23,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 35px;
+            gap: 30px;
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
         }
 
         /* 3D Card Styling */
         .card-container {
             perspective: 1000px;
-            width: 300px;
-            height: 360px;
+            width: 320px;
+            height: 380px;
         }
         .card {
             width: 100%;
@@ -55,6 +55,8 @@
             border: 2px solid rgba(255,255,255,0.15);
             overflow: hidden;
         }
+        
+        /* Front Face (AI Photo) */
         .card-front {
             background: #1e293b;
             display: flex;
@@ -70,8 +72,11 @@
             color: #94a3b8;
             text-align: center;
             padding: 20px;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
+
+        /* Back Face (Secret Message) */
         .card-back {
             background: linear-gradient(135deg, #311042, #160626);
             transform: rotateY(180deg);
@@ -79,7 +84,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
         }
 
@@ -94,14 +99,14 @@
 
         /* Form Styling */
         .generator-form {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            padding: 25px;
+            padding: 22px;
             border-radius: 15px;
             width: 100%;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #cbd5e1; font-weight: 600; }
         
         input[type="text"], input[type="password"], textarea {
@@ -119,7 +124,6 @@
         button {
             width: 100%;
             padding: 12px;
-            background: #6366f1;
             color: white;
             border: none;
             border-radius: 8px;
@@ -128,240 +132,198 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
         }
-        button:hover { background: #4f46e5; }
         button:active { transform: scale(0.98); }
         
-        .ai-btn { background: #10b981; margin-top: 5px; }
+        .ai-btn { background: #10b981; }
         .ai-btn:hover { background: #059669; }
-        .submit-btn { background: #8b5cf6; margin-top: 10px; font-size: 1.05rem; }
-        .submit-btn:hover { background: #7c3aed; }
+        
+        .save-btn { background: #8b5cf6; margin-top: 5px; }
+        .save-btn:hover { background: #7c3aed; }
+        
+        .unlock-btn { background: #ec4899; }
+        .unlock-btn:hover { background: #db2777; }
 
-        .share-section {
-            background: #065f46;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            border: 1px solid #10b981;
-        }
-        .share-link {
-            background: #022c22;
-            padding: 10px;
-            border-radius: 5px;
-            word-break: break-all;
-            margin-top: 8px;
-            font-size: 0.85rem;
-            user-select: all;
-            border: 1px dashed #10b981;
-            color: #34d399;
-        }
-        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 4px; font-weight: bold; }
+        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 5px; font-weight: bold; }
+        .status-toast { color: #34d399; font-size: 0.9rem; text-align: center; margin-top: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>3D Secret Photo Card</h1>
-    <p class="subtitle">अपनी नॉर्मल भाषा में लिखें, असली AI फ़ोटो तुरंत बनेगी!</p>
+    <h1>3D Secret Message Card</h1>
+    <p class="subtitle">फोटो जनरेट करें, मैसेज लॉक करें और कार्ड पर क्लिक करके पलटें!</p>
 
     <div class="container">
         
+        <!-- 3D Card Display -->
         <div class="card-container">
             <div class="card" id="mainCard" onclick="flipCard()">
+                
+                <!-- Front Side (Live AI Image) -->
                 <div class="card-face card-front">
                     <img id="frontImage" src="" class="hidden">
-                    <div id="frontPlaceholder" class="placeholder-text">📸<br>यहाँ आपकी फोटो दिखेगी<br><span style="font-size:0.75rem; color:#64748b;">(क्लिक करके पलटें)</span></div>
+                    <div id="frontPlaceholder" class="placeholder-text">🎨<br><strong>आपकी AI फोटो यहाँ दिखेगी</strong><br><span style="font-size:0.75rem; color:#64748b;">(नीचे से जनरेट करें)</span></div>
                 </div>
-                <div class="card-face card-back">
-                    <div id="secureScreen" class="secure-screen" onclick="event.stopPropagation();">
-                        <h3>🔒 यह मैसेज लॉक है</h3>
+                
+                <!-- Back Side (Password Protected Message) -->
+                <div class="card-face card-back" onclick="event.stopPropagation();">
+                    <!-- Lock Screen -->
+                    <div id="secureScreen" class="secure-screen">
+                        <h3>🔒 यह संदेश लॉक है</h3>
                         <p style="font-size: 0.8rem; color:#94a3b8;">देखने के लिए पासवर्ड डालें</p>
                         <input type="password" id="viewPassword" placeholder="पासवर्ड यहाँ लिखें">
-                        <button onclick="unlockMessage()">Unlock Message</button>
+                        <button class="unlock-btn" onclick="unlockMessage()">Unlock Message</button>
                     </div>
+                    <!-- Secret Message Screen -->
                     <div id="messageScreen" class="message-screen hidden">
                         <h3>🎁 आपके लिए संदेश:</h3>
                         <p id="secretText" style="font-size: 1.1rem; color: #f43f5e; margin-top:10px; font-weight:bold; word-break:break-word;"></p>
+                        <button style="background:#475569; padding:6px 12px; font-size:0.8rem; width:auto;" onclick="lockCardAgain()">फिर से लॉक करें</button>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <div class="generator-form" id="editorForm">
-            <h3>🛠️ अपना 3D कार्ड कस्टमाइज़ करें</h3>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-            
+        <!-- Settings Form -->
+        <div class="generator-form">
+            <!-- 1. AI Image Prompt -->
             <div class="form-group">
-                <label>AI फोटो (अपनी भाषा में लिखें)</label>
-                <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic या i hate you">
-                <button type="button" class="ai-btn" onclick="generateAIImage()">✨ AI फोटो जनरेट करें</button>
-                <div id="aiLoading" class="loading-text">⏳ AI फोटो बना रहा है, कृपया 4-5 सेकंड रुकें...</div>
+                <label>1. AI फोटो (अपनी भाषा में लिखें)</label>
+                <input type="text" id="aiPrompt" placeholder="जैसे: cycle ke sath pic, i hate you, ek sher...">
+                <button type="button" class="ai-btn" style="margin-top: 6px;" onclick="generateAIImage()">✨ फोटो जनरेट करें</button>
+                <div id="aiLoading" class="loading-text">⏳ असली AI फोटो बन रही है, 3-4 सेकंड रुकें...</div>
             </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
 
+            <!-- 2. Secret Message & Password -->
             <div class="form-group">
-                <label>सीक्रेट मैसेज (पीछे की तरफ दिखेगा)</label>
-                <textarea id="msgInput" rows="3" placeholder="यहाँ अपना स्पेशल सीक्रेट मैसेज लिखें..."></textarea>
+                <label>2. सीक्रेट मैसेज (जो पीछे छुपेगा)</label>
+                <textarea id="msgInput" rows="2" placeholder="यहाँ अपना सीक्रेट संदेश लिखें..."></textarea>
             </div>
             
             <div class="form-group">
-                <label>सुरक्षा पासवर्ड सेट करें</label>
-                <input type="password" id="passInput" placeholder="इसे खोले बिना मैसेज नहीं दिखेगा">
+                <label>3. सुरक्षा पासवर्ड बनाएं</label>
+                <input type="password" id="passInput" placeholder="पासवर्ड सेट करें">
             </div>
             
-            <button class="submit-btn" onclick="generateLink()">🔗 छोटा शेयर लिंक बनाएं</button>
-
-            <div id="shareResult" class="share-section hidden">
-                <strong>🎉 आपका कार्ड तैयार हो गया है!</strong>
-                <p style="font-size:0.8rem; margin:5px 0;">नीचे दिए छोटे लिंक को कॉपी करके शेयर करें:</p>
-                <div class="share-link" id="finalLink"></div>
-            </div>
+            <button class="save-btn" onclick="saveCardDetails()">🔒 कार्ड में मैसेज लॉक करें</button>
+            <div id="statusNotification" class="status-toast"></div>
         </div>
 
     </div>
 
     <script>
-        let globalPassword = "";
-        let currentPromptText = "";
+        let savedPassword = "";
+        let savedMessage = "";
 
+        // कार्ड पलटने का फ़ंक्शन (सिर्फ तभी काम करेगा जब फ्रंट देखना हो या बैक लॉक हो)
         function flipCard() {
             document.getElementById('mainCard').classList.toggle('flipped');
         }
 
-        // 🎯 स्मार्ट हिंग्लिश कनवर्टर (जो आपके शब्दों को असली विजुअल प्रॉम्प्ट में बदलता है)
+        // हिंग्लिश को समझने वाला ट्रांसलेटर इंजन
         function convertHinglishToEnglish(text) {
             let cleanText = text.toLowerCase().trim();
-
-            if (cleanText.includes("cycle ke sath") || cleanText.includes("cycle wali")) {
-                return "A photorealistic portrait of a young Indian guy standing with a trendy sports bicycle on a clean city street, morning light, 4k resolution";
+            if (cleanText.includes("cycle ke sath") || cleanText.includes("cycle wali") || cleanText.includes("cycle ke sath pic")) {
+                return "A realistic cinematic landscape of a modern sports bicycle parked on a beautiful autumn street with colorful trees, 4k photo";
             }
             if (cleanText.includes("hate you") || cleanText.includes("i hate you")) {
-                return "An emotional and artistic dramatic photograph of a lonely person with text 'I HATE YOU' stylized in the background, neon vibes, sad atmosphere";
+                return "A creative dark aesthetic neon sign on a brick wall saying 'I HATE YOU', moody atmosphere, high resolution";
             }
-            if (cleanText.includes("car ke sath") || cleanText.includes("gaddi")) {
-                return "A cool aesthetic shot of a luxury sports car parked on a highway during sunset, cinematic look";
+            if (cleanText.includes("car ke sath") || cleanText.includes("gaddi") || cleanText.includes("car wali")) {
+                return "A luxury modern sports car parked under city neon lights at rainy night, reflections on wet ground, photorealistic";
             }
-            if (cleanText.includes("love")) {
-                return "Beautiful glowing red hearts background abstract digital art high quality";
+            if (cleanText.includes("sher") || cleanText.includes("lion")) {
+                return "A majestic powerful lion sitting proudly on a rock, dramatic sunset lighting, cinematic wildlife photography";
             }
-
-            // अगर यूजर कुछ और नया लिखता है, तो उसका सीधा अनुवाद या कीवर्ड बनाकर भेजें
-            return cleanText + ", photorealistic, 4k portrait style";
+            if (cleanText.includes("love") || cleanText.includes("pyar")) {
+                return "A beautiful romantic digital art of floating glowing hearts, dreamy background";
+            }
+            return cleanText + ", high quality, photorealistic masterpiece";
         }
 
         // 🚀 असली AI इमेज जनरेशन फ़ंक्शन
         function generateAIImage() {
             const userPrompt = document.getElementById('aiPrompt').value.trim();
             if (!userPrompt) {
-                alert("कृपया पहले कुछ लिखें!");
+                alert("कृपया पहले कुछ टाइप करें!");
                 return;
             }
 
             const loading = document.getElementById('aiLoading');
+            const img = document.getElementById('frontImage');
+            const placeholder = document.getElementById('frontPlaceholder');
+            
             loading.style.display = 'block';
 
-            // हिंग्लिश इनपुट को कंवर्ट करें
-            currentPromptText = convertHinglishToEnglish(userPrompt);
+            const englishPrompt = convertHinglishToEnglish(userPrompt);
+            const randomSeed = Math.floor(Math.random() * 999999);
             
-            // प्रत्येक बार अलग इमेज के लिए रैंडम नंबर
-            const randomSeed = Math.floor(Math.random() * 99999);
-            
-            // 🌟 Pollinations का Flux Model (असली AI जो सब कुछ लाइव बनाएगा)
-            const aiImageUrl = `https://image.pollinations.ai/p/${encodeURIComponent(currentPromptText)}?width=300&height=360&seed=${randomSeed}&model=flux&nologo=true`;
+            // Flux AI Live URL
+            const aiUrl = `https://image.pollinations.ai/p/${encodeURIComponent(englishPrompt)}?width=320&height=380&seed=${randomSeed}&model=flux&nologo=true`;
 
-            const img = document.getElementById('frontImage');
-            
-            // इमेज लोडिंग होने तक रुकें ताकि कोई गड़बड़ न हो
             const tempImg = new Image();
-            tempImg.src = aiImageUrl;
+            tempImg.src = aiUrl;
             
             tempImg.onload = function() {
-                img.src = aiImageUrl;
+                img.src = aiUrl;
                 img.classList.remove('hidden');
-                document.getElementById('frontPlaceholder').classList.add('hidden');
+                placeholder.classList.add('hidden');
                 loading.style.display = 'none';
             };
 
             tempImg.onerror = function() {
                 loading.style.display = 'none';
-                alert("नेटवर्क धीमा है, कृपया एक बार फिर बटन दबाएं।");
+                alert("सर्वर व्यस्त है, कृपया दोबारा दबाएं।");
             };
         }
 
-        // 🔗 छोटा शेयर लिंक (ताकि लिंक बड़ा न बने)
-        function generateLink() {
+        // 🔒 कार्ड में मैसेज सेव करने का फ़ंक्शन
+        function saveCardDetails() {
             const msg = document.getElementById('msgInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
 
-            if(!currentPromptText) {
-                alert("कृपया पहले 'AI फोटो जनरेट करें' बटन पर क्लिक करके इमेज लोड करें!");
-                return;
-            }
-            if(!msg || !pass) {
-                alert("कृपया मैसेज और पासवर्ड दोनों भरें!");
+            if (!msg || !pass) {
+                alert("कृपया मैसेज और पासवर्ड दोनों भरें ताकि उसे लॉक किया जा सके!");
                 return;
             }
 
-            // लिंक को छोटा रखने के लिए फोटो का टेक्स्ट प्रॉम्प्ट भेज रहे हैं न कि पूरी इमेज फाइल
-            const cardData = {
-                pr: btoa(encodeURIComponent(currentPromptText)),
-                ms: btoa(encodeURIComponent(msg)),
-                ps: btoa(encodeURIComponent(pass))
-            };
+            savedMessage = msg;
+            savedPassword = pass;
 
-            const jsonStr = JSON.stringify(cardData);
-            const encodedData = btoa(encodeURIComponent(jsonStr));
-            
-            const currentUrl = window.location.href.split('?')[0];
-            const finalShareUrl = `${currentUrl}?card=${encodedData}`;
+            // बैकसाइड रीसेट करें ताकि पुराना खुला मैसेज न दिखे
+            lockCardAgain();
 
-            document.getElementById('finalLink').innerText = finalShareUrl;
-            document.getElementById('shareResult').classList.remove('hidden');
+            const toast = document.getElementById('statusNotification');
+            toast.innerText = "✅ मैसेज कार्ड के पीछे सफलतापूर्वक लॉक हो गया है! अब ऊपर कार्ड पर क्लिक करके देखें।";
             
-            globalPassword = cardData.ps;
-            document.getElementById('secretText').innerText = msg;
+            setTimeout(() => { toast.innerText = ""; }, 4000);
         }
 
+        // 🔓 पासवर्ड डालकर मैसेज देखना
         function unlockMessage() {
             const enteredPass = document.getElementById('viewPassword').value.trim();
-            if (btoa(encodeURIComponent(enteredPass)) === globalPassword) {
+
+            if (!savedPassword) {
+                alert("⚠️ पहले नीचे फॉर्म में मैसेज और पासवर्ड लिखकर 'लॉक करें' बटन दबाएं!");
+                return;
+            }
+
+            if (enteredPass === savedPassword) {
+                document.getElementById('secretText').innerText = savedMessage;
                 document.getElementById('secureScreen').classList.add('hidden');
                 document.getElementById('messageScreen').classList.remove('hidden');
             } else {
-                alert("❌ गलत पासवर्ड!");
+                alert("❌ गलत पासवर्ड! सही पासवर्ड डालें।");
             }
         }
 
-        // लिंक खोलते ही सामने वाले के ब्राउज़र पर तुरंत लाइव AI रेंडर करना
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const cardParam = urlParams.get('card');
-
-            if (cardParam) {
-                try {
-                    document.getElementById('editorForm').classList.add('hidden');
-                    const decodedStr = decodeURIComponent(atob(cardParam));
-                    const decodedData = JSON.parse(decodedStr);
-                    
-                    const sharedPrompt = decodeURIComponent(atob(decodedData.pr));
-                    // फिक्स्ड सीड ताकि सामने वाले को भी ठीक वही इमेज दिखे जो आपने चुनी थी
-                    const aiImageUrl = `https://image.pollinations.ai/p/${encodeURIComponent(sharedPrompt)}?width=300&height=360&seed=42&model=flux&nologo=true`;
-
-                    const img = document.getElementById('frontImage');
-                    img.src = aiImageUrl;
-                    img.classList.remove('hidden');
-                    document.getElementById('frontPlaceholder').classList.add('hidden');
-
-                    globalPassword = decodedData.ps;
-                    document.getElementById('secretText').innerText = decodeURIComponent(atob(decodedData.ms));
-                } catch (e) {
-                    alert("लिंक सही नहीं है।");
-                }
-            } else {
-                document.getElementById('secureScreen').classList.add('hidden');
-                document.getElementById('messageScreen').classList.remove('hidden');
-                document.getElementById('secretText').innerText = "आपका संदेश यहाँ दिखेगा।";
-            }
+        // वापस लॉक करने के लिए
+        function lockCardAgain() {
+            document.getElementById('viewPassword').value = "";
+            document.getElementById('secureScreen').classList.remove('hidden');
+            document.getElementById('messageScreen').classList.add('hidden');
         }
     </script>
 </body>
