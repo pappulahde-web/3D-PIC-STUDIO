@@ -7,157 +7,125 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ 3D PIC STUDIO - Real AI Art Maker</title>
-    
-    <!-- Google Fonts & Tailwind CSS -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>✨ 3D PIC STUDIO - Full Version</title>
+    <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://tailwindcss.com"></script>
-    
-    <!-- 🌐 सोशल आइकन्स के लिए FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cloudflare.com">
-
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 100%);
-            color: #f8fafc; 
-            min-height: 100vh; 
+            background: linear-gradient(135deg, #0a0f1d 0%, #1e1b4b 50%, #2e1065 100%);
+            color: #f8fafc; min-height: 100vh; 
         }
-        .glass { 
-            background: rgba(15, 23, 42, 0.45); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 24px; 
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
-        }
-        .glass-input { 
-            background: rgba(15, 23, 42, 0.6); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: white; 
-            border-radius: 14px; 
-            transition: all 0.3s ease;
-        }
-        .glass-input:focus { 
-            border-color: #6366f1; 
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
-            outline: none; 
-        }
-        .card-3d-wrap { perspective: 1500px; width: 100%; max-width: 320px; height: 460px; }
-        .card-3d-inner { 
-            width: 100%; 
-            height: 100%; 
-            position: relative; 
-            transform-style: preserve-3d; 
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            cursor: pointer; 
-        }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; }
+        .glass-input:focus { border-color: #818cf8; outline: none; }
+        .card-3d-wrap { perspective: 1200px; width: 300px; height: 430px; }
+        .card-3d-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
         .card-3d-inner.flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { 
-            position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            backface-visibility: hidden; 
-            border-radius: 24px; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-        }
-        .card-back { transform: rotateY(180deg); padding: 28px; justify-content: space-between; background: #1e1b4b; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .card-back { transform: rotateY(180deg); padding: 24px; justify-content: space-between; background: #111827; }
+        
+        .art-bg-default { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
         
         /* Premium Themes */
-        .theme-lemon { border: 4px solid #eab308; }
-        .theme-peri { border: 4px solid #6366f1; }
-        .theme-rose { border: 4px solid #db2777; }
-        .theme-birthday { border: 4px solid #f97316; }
-        .theme-love { border: 4px solid #e11d48; }
-        .theme-festival { border: 4px solid #a855f7; }
+        .theme-lemon { background: linear-gradient(135deg, #fef08a, #eab308); color: #0f172a; }
+        .theme-peri { background: linear-gradient(135deg, #c7d2fe, #6366f1); color: white; }
+        .theme-rose { background: linear-gradient(135deg, #fbcfe8, #db2777); color: white; }
+        .theme-birthday { background: linear-gradient(135deg, #ffedd5, #f97316); color: white; }
+        .theme-love { background: linear-gradient(135deg, #ffe4e6, #e11d48); color: white; }
+        .theme-festival { background: linear-gradient(135deg, #fae8ff, #a855f7); color: white; }
+        
+        /* Gallery Thumbnail Hover */
+        .gallery-thumb { transition: all 0.3s ease; cursor: pointer; }
+        .gallery-thumb:hover { transform: scale(1.05); border-color: #818cf8; }
     </style>
 </head>
-<body class="p-4 md:p-6 flex flex-col justify-between items-center">
+<body class="p-4 md:p-8 flex flex-col justify-between">
 
-    <!-- Top Navigation Header -->
-    <header class="max-w-7xl w-full mx-auto mb-6 glass p-4 flex justify-between items-center px-6">
-        <div class="flex items-center gap-2">
-            <span class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">✨ 3D PIC STUDIO</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-xs text-slate-400 font-medium hidden sm:inline">AI Engine Connected</span>
-        </div>
+    <header class="max-w-7xl w-full mx-auto mb-8 glass p-4 flex justify-between items-center px-6">
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">✨ 3D PIC STUDIO</h1>
     </header>
 
-    <!-- Main Studio Layout (आजू-बाजू ग्रिड) -->
-    <main class="max-w-7xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
+    <!-- Main Studio Layout (आजू-बाजू ग्रिड स्ट्रक्चर) -->
+    <main class="max-w-7xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- 👈 बायाँ पार्ट: AI जनरेशन टूल्स और इनपुट्स -->
+        <!-- 👈 बायाँ कॉलम: AI जनरेटर और इनपुट कंट्रोल्स (Left Panel) -->
         <div id="creator-view" class="lg:col-span-6 glass p-6 md:p-8 space-y-6">
             <div>
-                <span class="text-[10px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">PART 1: AI GENERATION</span>
-                <h2 class="text-xl font-extrabold text-white mt-2 mb-1">AI आर्ट स्टूडियो टूल्स</h2>
-                <p class="text-xs text-slate-400">इमेज का नाम इंग्लिश में लिखें (जैसे: cute 3d teddy bear cyberpunk style)। हमारा AI असली फोटो बनाएगा।</p>
+                <h2 class="text-xl font-bold text-white mb-1">आर्ट स्टूडियो मेकर</h2>
+                <p class="text-xs text-slate-400">अपना नाम/भावना और कोई भी इमोजी डालें, सिस्टम खुद डिजिटल आर्ट बनाएगा।</p>
             </div>
             
-            <!-- Step 1 (With Active AI Generator) -->
+            <!-- Step 1 -->
             <div class="space-y-3">
-                <label class="block font-bold text-xs text-slate-400 uppercase tracking-wider">कदम 1: क्या इमेज बनानी है? (इंग्लिश में लिखें)</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input type="text" id="ai-prompt" placeholder="उदा: A beautiful 3D neon heart, high quality..." class="sm:col-span-2 p-3.5 glass-input text-sm focus:outline-none">
-                    <select id="emoji-select" class="p-3.5 glass-input text-sm focus:outline-none bg-slate-900 text-white cursor-pointer">
-                        <option value="❤️ Love Theme">❤️ प्यार (Love)</option>
-                        <option value="😇 Cute Style">😇 क्यूट (Cute)</option>
-                        <option value="🧸 3D Fluffy Teddy">🧸 टेडी (Teddy)</option>
-                        <option value="🎂 Birthday Cake">🎂 जन्मदिन (Birthday)</option>
-                        <option value="😡 Angry Neon">😡 गुस्सा (Angry)</option>
-                        <option value="🐱 Cute 3D Cat">🐱 बिल्ली (Cat)</option>
+                <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 1: नाम/भावना लिखें और इमोजी चुनें</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" id="ai-prompt" oninput="updatePreviewText()" placeholder="उदा: I HATE YOU, RAHUL, HAPPY BIRTHDAY..." class="p-3 glass-input text-sm focus:outline-none">
+                    <select id="emoji-select" onchange="updatePreviewEmoji()" class="p-3 glass-input text-sm focus:outline-none bg-slate-900 text-white">
+                        <option value="❤️">❤️ प्यार (Love)</option>
+                        <option value="😇">😇 कार्टून स्माइल (Cute)</option>
+                        <option value="🧸">🧸 टेडी बियर (Teddy)</option>
+                        <option value="🎂">🎂 जन्मदिन (Birthday)</option>
+                        <option value="😡">😡 गुस्सा (Angry)</option>
+                        <option value="🐱">🐱 बिल्ली कार्टून (Cat)</option>
                     </select>
                 </div>
-                <!-- 🎯 यह बटन अब असली Stable Diffusion AI से फोटो खींचेगा -->
-                <button id="ai-gen-btn" onclick="generateRealAIArt()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 text-white font-bold p-3.5 rounded-xl text-xs transition cursor-pointer">
-                    🎨 3D आर्ट जनरेट करें (Instant AI)
-                </button>
+                <button onclick="generateCustomArt()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-2.5 rounded-xl text-xs transition">🎨 3D आर्ट जनरेट करें (Instant)</button>
             </div>
 
             <!-- Step 2 & 3 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label class="block font-bold text-xs text-slate-400 uppercase tracking-wider">कदम 2: पीछे का सीक्रेट मैसेज</label>
-                    <input type="text" id="card-message" oninput="updateBackMessage()" placeholder="यहाँ गुप्त संदेश लिखें..." class="w-full p-3.5 glass-input text-sm">
+                    <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 2: पीछे का सीक्रेट मैसेज</label>
+                    <input type="text" id="card-message" oninput="updateBackMessage()" placeholder="यहाँ अपना गुप्त संदेश लिखें..." class="w-full p-3 glass-input text-sm">
                 </div>
                 <div class="space-y-2">
-                    <label class="block font-bold text-xs text-slate-400 uppercase tracking-wider">कदम 3: सुरक्षा लॉक पासवर्ड</label>
-                    <input type="password" id="card-password" placeholder="पासवर्ड बनाएं..." class="w-full p-3.5 glass-input text-sm">
+                    <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 3: सुरक्षा लॉक पासवर्ड</label>
+                    <input type="password" id="card-password" placeholder="पासवर्ड बनाएं..." class="w-full p-3 glass-input text-sm">
                 </div>
             </div>
 
             <!-- Step 4 -->
             <div class="space-y-2">
-                <label class="block font-bold text-xs text-slate-400 uppercase tracking-wider">कदम 4: बॉर्डर फ्रेम थीम चुनें</label>
+                <label class="block font-semibold text-xs text-slate-400 uppercase tracking-wider">कदम 4: बैकग्राउंड थीम चुनें</label>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                    <button onclick="setTheme('lemon')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow transform hover:scale-105 transition">Gold</button>
-                    <button onclick="setTheme('peri')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-300 to-indigo-500 text-white shadow transform hover:scale-105 transition">Indigo</button>
-                    <button onclick="setTheme('rose')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-300 to-pink-500 text-white shadow transform hover:scale-105 transition">Rose</button>
-                    <button onclick="setTheme('birthday')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow transform hover:scale-105 transition">Orange</button>
-                    <button onclick="setTheme('love')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow transform hover:scale-105 transition">❤ Love</button>
-                    <button onclick="setTheme('festival')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow transform hover:scale-105 transition">Festival</button>
+                    <button onclick="setTheme('lemon')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow">Gold</button>
+                    <button onclick="setTheme('peri')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-300 to-indigo-500 text-white shadow">Indigo</button>
+                    <button onclick="setTheme('rose')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-300 to-pink-500 text-white shadow">Rose</button>
+                    <button onclick="setTheme('birthday')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow">Orange</button>
+                    <button onclick="setTheme('love')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow">❤ Love</button>
+                    <button onclick="setTheme('festival')" class="p-2 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow">Festival</button>
                 </div>
             </div>
 
-            <button onclick="publishCard()" class="glow-button w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-base font-bold p-4 rounded-xl shadow-lg transition duration-300 cursor-pointer">🚀 लाइव लिंक जेनरेट करें</button>
+            <button onclick="publishCard()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 text-white text-base font-bold p-4 rounded-xl shadow-lg transition">🚀 लाइव लिंक जेनरेट करें</button>
             
-            <!-- Link Output Box -->
-            <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-5 rounded-xl space-y-4">
-                <div>
-                    <p class="font-bold text-xs text-emerald-400 mb-2">✨ आपका 3D स्टूडियो लिंक लाइव हो गया है:</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="share-url-output" readonly class="flex-1 bg-black/40 p-3 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700 focus:outline-none">
-                        <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 rounded-lg text-xs transition cursor-pointer">Copy</button>
-                    </div>
+            <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
+                <p class="font-bold text-xs text-emerald-400">✨ आपका कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
+                    <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition">Copy</button>
                 </div>
-                <div class="border-t border-slate-800 pt-3">
-                    <p class="text-[11px] text-slate-400 font-medium mb-2.5 text-center">दोस्तों के साथ सीधे शेयर करें:</p>
-                    <div class="flex justify-center gap-4">
+            </div>
+        </div>
+
+        <!-- 👉 दायाँ कॉलम: फोटो गैलरी और 3D लाइव प्रीव्यू (Right Panel) -->
+        <div class="lg:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-6 glass p-6 md:p-8">
+            
+            <!-- 🖼️ फोटो गैलरी सेलेक्ट ग्रिड (Photo Selection Gallery) -->
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider text-indigo-400">आर्ट गैलरी बैकग्राउंड</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">कार्ड बैकग्राउंड के लिए कोई भी एक डिज़ाइन चुनें:</p>
+                </div>
+                
+                <!-- थंबनेल ग्रिड (4 रेडीमेड डिज़ाइन उदाहरण) -->
+                <div class="grid grid-cols-2 gap-2" id="gallery-grid-box">
+                    <div onclick="selectGalleryBg('lemon')" class="h-24 rounded-xl border border-slate-700 bg-gradient-to-br from-yellow-300 to-yellow-500 gallery-thumb flex items-center justify-center text-slate-900 font-bold text-xs">Gold Light</div>
+                    <div onclick="selectGalleryBg('peri')" class="h-24 rounded-xl border border-slate-700 bg-gradient-to-br from-indigo-300 to-indigo-500 gallery-thumb flex items-center justify-center text-white font-bold text-xs">Neon Blue</div>
+                    <div onclick="selectGalleryBg('rose')" class="h-24 rounded-xl border border-slate-700 bg-gradient-to-br from-pink-300 to-pink-500 gallery-thumb flex items-center justify-center text-white font-bold text-xs">Pink Rose</div>
+                    <div onclick="selectGalleryBg('festival')" class="h-24 rounded-xl border border-slate-700 bg-gradient-to-br from-purple-400 to-purple-600 gallery-thumb flex items-center justify-center text-white font-bold text-xs">Cyber Magic</div>
+                </div>
+                
+                <div class="pt-2">
+                    <label class="block font-semibold text-[11px] text-slate-400 mb-1">या अपनी खुद की फोटो अपलोड करें:</label>
