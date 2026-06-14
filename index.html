@@ -7,16 +7,13 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ 3D PIC STUDIO - Real AI Digital Art Maker</title>
+    <title>✨ 3D PIC STUDIO - Premium Digital Art Maker</title>
     
     <!-- Google Fonts & Tailwind CSS CDN -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://jsdelivr.net"></script>
-    
-    <!-- 🤖 Puter.js SDK - मुफ्त में बिना API Key के असली AI चलाने के लिए -->
-    <script src="https://js.puter.com/v2/"></script>
 
     <style>
         body { 
@@ -67,12 +64,14 @@
         }
         .card-back { transform: rotateY(180deg); padding: 28px; justify-content: space-between; background: #0f172a; }
         
-        .theme-lemon { border: 4px solid #eab308; box-shadow: 0 0 20px rgba(234,179,8,0.3); }
-        .theme-peri { border: 4px solid #6366f1; box-shadow: 0 0 20px rgba(99,102,241,0.3); }
-        .theme-rose { border: 4px solid #db2777; box-shadow: 0 0 20px rgba(219,39,119,0.3); }
-        .theme-birthday { border: 4px solid #f97316; box-shadow: 0 0 20px rgba(249,115,22,0.3); }
-        .theme-love { border: 4px solid #e11d48; box-shadow: 0 0 20px rgba(225,29,72,0.3); }
-        .theme-festival { border: 4px solid #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.3); }
+        /* Art Themes & Gradients */
+        .art-bg-default { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
+        .theme-lemon { background: linear-gradient(135deg, #fef08a, #eab308); color: #0f172a; }
+        .theme-peri { background: linear-gradient(135deg, #c7d2fe, #6366f1); color: white; }
+        .theme-rose { background: linear-gradient(135deg, #fbcfe8, #db2777); color: white; }
+        .theme-birthday { background: linear-gradient(135deg, #ffedd5, #f97316); color: white; }
+        .theme-love { background: linear-gradient(135deg, #ffe4e6, #e11d48); color: white; }
+        .theme-festival { background: linear-gradient(135deg, #fae8ff, #a855f7); color: white; }
     </style>
 </head>
 <body class="p-4 md:p-8 flex flex-col justify-between items-center min-h-screen" onload="checkAppMode()">
@@ -80,7 +79,7 @@
     <!-- Header Navigation -->
     <header class="max-w-6xl w-full mx-auto mb-8 glass-panel p-4 rounded-2xl flex justify-between items-center px-6">
         <div class="flex items-center gap-2">
-            <span class="text-2xl">🎨</span>
+            <span class="text-2xl">✨</span>
             <h1 class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 3D PIC STUDIO
             </h1>
@@ -93,31 +92,30 @@
         <!-- Left Side Dynamic Panel -->
         <div class="lg:col-span-7 glass-panel p-6 md:p-8 rounded-3xl space-y-6">
             
-            <!-- CREATOR SECTION -->
+            <!-- 🛠️ MODE 1: CREATOR SECTION (दिखेगा जब नया कार्ड बनाना हो) -->
             <div id="creator-panel" class="space-y-6">
                 <div>
-                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">Stable Diffusion Pro Engine</span>
+                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">AI Engine Active</span>
                     <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">आर्ट स्टूडियो मेकर</h2>
-                    <p class="text-sm text-slate-400">जो भी फोटो चाहिए, इंग्लिश में लिखें (जैसे: "cute teddy bear cyberpunk style")।</p>
+                    <p class="text-sm text-slate-400">अपना नाम/भावना और कोई भी इमोजी डालें, सिस्टम खुद डिजिटल आर्ट बनाएगा।</p>
                 </div>
                 
                 <div class="space-y-3">
-                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: नाम या भावना लिखें (AI Prompt)</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input type="text" id="ai-prompt" placeholder="उदा: Rahul, Priya, Happy Birthday..." class="sm:col-span-2 p-3.5 glass-input text-sm rounded-xl w-full">
-                        <select id="emoji-select" class="p-3.5 glass-input text-sm rounded-xl bg-slate-900 text-white cursor-pointer">
-                            <option value="❤️ Red Heart">❤️ प्यार (Love)</option>
-                            <option value="😇 Cute Smiley Face">😇 कार्टून स्माइल (Cute)</option>
-                            <option value="🧸 3D Fluffy Teddy Bear">🧸 टेडी बियर (Teddy)</option>
-                            <option value="🎂 Birthday Cake with Candles">🎂 जन्मदिन (Birthday)</option>
-                            <option value="😡 Angry Monster Ghost">😡 गुस्सा (Angry)</option>
-                            <option value="🐱 Cute 3D Cartoon Cat">🐱 बिल्ली कार्टून (Cat)</option>
+                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: नाम/भावना लिखें और इमोजी चुनें</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="ai-prompt" oninput="updatePreviewFront()" placeholder="I HATE YOU, RAHUL, HAPPY BIRTHDAY..." class="p-3.5 glass-input text-sm rounded-xl">
+                        <select id="emoji-select" onchange="updatePreviewFront()" class="p-3.5 glass-input text-sm rounded-xl bg-slate-900 text-white cursor-pointer">
+                            <option value="❤️">❤️ प्यार (Love)</option>
+                            <option value="😇">😇 कार्टून स्माइल (Cute)</option>
+                            <option value="🧸">🧸 टेडी बियर (Teddy)</option>
+                            <option value="🎂">🎂 जन्मदिन (Birthday)</option>
+                            <option value="😡">😡 गुस्सा (Angry)</option>
+                            <option value="🐱">🐱 बिल्ली कार्टून (Cat)</option>
                         </select>
                     </div>
-                    
-                    <!-- 🎯 100% सुधारित वर्किंग AI जनरेट बटन -->
-                    <button id="ai-gen-btn" onclick="generateRealAIArt()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold p-4 rounded-xl text-xs transition shadow-md cursor-pointer">
-                        🎨 असली AI फोटो जनरेट करें (Stable Diffusion)
+                    <!-- 🎨 मुख्य AI जनरेट बटन जो प्रीव्यू लोड करेगा -->
+                    <button onclick="generateCustomArt()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-3 rounded-xl text-xs transition shadow-md cursor-pointer">
+                        🎨 3D आर्ट जनरेट करें (Instant)
                     </button>
                 </div>
 
@@ -133,13 +131,13 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 4: बॉर्डर फ्रेम थीम चुनें</label>
+                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 4: बैकग्राउंड थीम चुनें</label>
                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
                         <button onclick="setTheme('lemon')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow transform hover:scale-105 transition">Gold</button>
                         <button onclick="setTheme('peri')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow transform hover:scale-105 transition">Indigo</button>
                         <button onclick="setTheme('rose')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow transform hover:scale-105 transition">Rose</button>
                         <button onclick="setTheme('birthday')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow transform hover:scale-105 transition">Orange</button>
-                        <button onclick="setTheme('love')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-500 to-red-600 text-white shadow transform hover:scale-105 transition">❤ Love</button>
+                        <button onclick="setTheme('love')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-400 to-red-600 text-white shadow transform hover:scale-105 transition">❤ Love</button>
                         <button onclick="setTheme('festival')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow transform hover:scale-105 transition">Festival</button>
                     </div>
                 </div>
@@ -149,7 +147,7 @@
                 </button>
                 
                 <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
-                    <p class="font-bold text-xs text-emerald-400">✨ आपका कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
+                    <p class="font-bold text-xs text-emerald-400">✨ कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
                     <div class="flex gap-2">
                         <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2.5 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
                         <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition cursor-pointer">Copy</button>
@@ -157,3 +155,6 @@
                 </div>
             </div>
 
+            <!-- 🔓 MODE 2: UNLOCK PANEL (दिखेगा जब कोई शेयर लिंक ओपन करेगा) -->
+            <div id="unlock-panel" class="hidden space-y-6">
+                <div>
