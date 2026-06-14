@@ -1,337 +1,159 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+    <script>
+        // ⚡ आपकी लाइव बैकएंड API का सटीक लिंक
+        const API_URL = 'https://onrender.com';
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Secret Surprise Card</title>
+    <title>✨ 3D PIC STUDIO - Real AI Digital Art Maker</title>
     
-    <!-- 🌐 OPEN GRAPH TAGS: जब आप इस साइट को Vercel पर डालेंगे, तो यह फोटो WhatsApp पर दिखेगी -->
-    <meta property="og:title" content="🎁 आपके लिए एक सीक्रेट 3D कार्ड आया है!">
-    <meta property="og:description" content="अंदर एक जादुई फोटो और गुप्त संदेश छुपा है। पासवर्ड डालकर अभी खोलें!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500"> <!-- आप यहाँ कोई भी गिफ्ट की फोटो बदल सकते हैं -->
-    <meta property="og:type" content="website">
+    <!-- Google Fonts & Tailwind CSS CDN -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://jsdelivr.net"></script>
+    
+    <!-- 🤖 Puter.js SDK - मुफ्त में बिना API Key के Stable Diffusion AI चलाने के लिए -->
+    <script src="https://puter.com"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            color: #fff;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+            color: #f8fafc; 
+            min-height: 100vh; 
         }
-        h1 { margin-bottom: 5px; font-size: 2rem; text-align: center; color: #a5b4fc; }
-        p.subtitle { margin-bottom: 30px; color: #94a3b8; text-align: center; font-size: 0.95rem; }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            width: 100%;
-            max-width: 480px;
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.45); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
-
-        /* 3D Card */
-        .card-container { perspective: 1000px; width: 320px; height: 380px; }
-        .card {
-            width: 100%; height: 100%; position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+        .glass-input { 
+            background: rgba(0, 0, 0, 0.5); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: white; 
+            transition: all 0.3s ease;
         }
-        .card.flipped { transform: rotateY(180deg); }
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255,255,255,0.15); overflow: hidden;
+        .glass-input:focus { 
+            border-color: #6366f1; 
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
+            outline: none; 
         }
-        .card-front { background: #1e293b; display: flex; align-items: center; justify-content: center; }
-        .card-front img { width: 100%; height: 100%; object-fit: cover; }
-        .placeholder-text { color: #94a3b8; text-align: center; padding: 20px; }
-
-        .card-back {
-            background: linear-gradient(135deg, #311042, #160626);
-            transform: rotateY(180deg); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 25px;
+        .card-3d-wrap { perspective: 1500px; width: 320px; height: 460px; }
+        .card-3d-inner { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            cursor: pointer; 
         }
-        .secure-screen, .message-screen {
-            width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px;
+        .card-3d-inner.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 28px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
         }
-        .hidden { display: none !important; }
-
-        /* Form */
-        .generator-form {
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
-            padding: 22px; border-radius: 15px; width: 100%; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #cbd5e1; font-weight: 600; }
+        .card-back { transform: rotateY(180deg); padding: 28px; justify-content: space-between; background: #0f172a; }
         
-        input[type="text"], input[type="password"], textarea {
-            width: 100%; padding: 11px; border-radius: 8px; border: 1px solid #475569;
-            background: #0f172a; color: #fff; font-size: 0.95rem; outline: none;
-        }
-        input:focus, textarea:focus { border-color: #6366f1; }
-        
-        input[type="file"] {
-            background: #0f172a; padding: 8px; border: 1px dashed #475569;
-            border-radius: 8px; width: 100%; color: #cbd5e1; cursor: pointer;
-        }
-
-        button {
-            width: 100%; padding: 11px; color: white; border: none; border-radius: 8px;
-            font-size: 0.95rem; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:active { transform: scale(0.98); }
-        .ai-btn { background: #10b981; margin-top: 6px; }
-        .share-btn { background: #8b5cf6; margin-top: 10px; font-size: 1.05rem; }
-
-        .tab-container { display: flex; gap: 10px; margin-bottom: 12px; }
-        .tab-btn { background: #334155; padding: 8px; font-size: 0.85rem; }
-        .tab-btn.active { background: #6366f1; }
-        .loading-text { font-size: 0.85rem; color: #f59e0b; display: none; margin-top: 5px; font-weight: bold; }
-        
-        /* Share Result Box */
-        .share-section {
-            background: #065f46; padding: 15px; border-radius: 8px; margin-top: 15px;
-            text-align: center; border: 1px solid #10b981;
-        }
-        .share-link {
-            background: #022c22; padding: 10px; border-radius: 5px; word-break: break-all;
-            margin-top: 8px; font-size: 0.85rem; border: 1px dashed #34d399; color: #34d399;
-            margin-bottom: 12px; max-height: 60px; overflow-y: auto;
-        }
-
-        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .copy-action-btn { background: #2563eb; grid-column: span 2; }
-        .whatsapp-btn { background: #22c55e; }
-        .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .fb-btn { background: #1877f2; }
-        .twitter-btn { background: #000000; border: 1px solid #334155; }
+        .theme-lemon { background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(254,240,138,0.4)); }
+        .theme-peri { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(199,210,254,0.4)); }
+        .theme-rose { background: linear-gradient(135deg, rgba(219,39,119,0.2), rgba(251,207,232,0.4)); }
+        .theme-birthday { background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(255,237,213,0.4)); }
+        .theme-love { background: linear-gradient(135deg, rgba(225,29,72,0.2), rgba(255,228,230,0.4)); }
+        .theme-festival { background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(250,232,255,0.4)); }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8 flex flex-col justify-between items-center min-h-screen" onload="checkAppMode()">
 
-    <h1>3D Secret Message Card</h1>
-    <p class="subtitle">आकर्षक टेक्स्ट और सोशल शेयरिंग फीचर्स के साथ!</p>
-
-    <div class="container">
-        <div class="card-container">
-            <div class="card" id="mainCard" onclick="flipCard()">
-                <div class="card-face card-front">
-                    <img id="frontImage" src="" class="hidden">
-                    <div id="frontPlaceholder" class="placeholder-text"><i class="fa-regular fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i><br><strong>फोटो यहाँ दिखेगी</strong></div>
-                </div>
-                <div class="card-face card-back" onclick="event.stopPropagation();">
-                    <div id="secureScreen" class="secure-screen">
-                        <h3><i class="fa-solid fa-lock"></i> यह संदेश लॉक है</h3>
-                        <input type="password" id="viewPassword" placeholder="पासवर्ड डालें">
-                        <button style="background:#ec4899;" onclick="unlockMessage()"><i class="fa-solid fa-unlock"></i> Unlock</button>
-                    </div>
-                    <div id="messageScreen" class="message-screen hidden">
-                        <h3><i class="fa-solid fa-gift"></i> संदेश:</h3>
-                        <p id="secretText" style="font-size: 1.1rem; color: #f43f5e; font-weight:bold;"></p>
-                    </div>
-                </div>
-            </div>
+    <!-- Header Navigation -->
+    <header class="max-w-6xl w-full mx-auto mb-8 glass-panel p-4 rounded-2xl flex justify-between items-center px-6">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">🎨</span>
+            <h1 class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                3D PIC STUDIO
+            </h1>
         </div>
+    </header>
 
-        <div class="generator-form" id="editorForm">
-            <label>1. फोटो का तरीका</label>
-            <div class="tab-container">
-                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')"><i class="fa-solid fa-folder-open"></i> गैलरी अपलोड</button>
-                <button class="tab-btn" id="tabAiBtn" onclick="switchTab('ai')"><i class="fa-solid fa-wand-magic-sparkles"></i> AI जनरेशन</button>
-            </div>
-
-            <div id="uploadSection" class="form-group">
-                <input type="file" id="imageUploader" accept="image/*" onchange="uploadToCloud()">
-                <div id="uploadLoading" class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> फोटो अपलोड हो रही है...</div>
-            </div>
-
-            <div id="aiSection" class="form-group hidden">
-                <input type="text" id="aiPrompt" placeholder="जैसे: red car on mountain...">
-                <button type="button" class="ai-btn" onclick="generateAIImage()"><i class="fa-solid fa-bolt"></i> फोटो बनाएं</button>
-                <div id="aiLoading" class="loading-text"><i class="fa-solid fa-circle-notch fa-spin"></i> AI काम कर रहा है...</div>
-            </div>
-
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-            <div class="form-group"><label>2. सीक्रेट संदेश</label><textarea id="msgInput" rows="2" placeholder="चिट्ठी यहाँ लिखें..."></textarea></div>
-            <div class="form-group"><label>3. पासवर्ड</label><input type="password" id="passInput" placeholder="पासवर्ड चुनें"></div>
+    <!-- Main Dashboard -->
+    <main class="max-w-6xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
+        
+        <!-- Left Side Dynamic Panel -->
+        <div class="lg:col-span-7 glass-panel p-6 md:p-8 rounded-3xl space-y-6">
             
-            <button class="share-btn" onclick="generateShareableLink()"><i class="fa-solid fa-link"></i> छोटा शेयर लिंक बनाएं</button>
-
-            <div id="shareResult" class="share-section hidden">
-                <strong>🎉 कार्ड तैयार है! शेयर करें:</strong>
-                <div class="share-link" id="finalLink"></div>
+            <!-- CREATOR SECTION -->
+            <div id="creator-panel" class="space-y-6">
+                <div>
+                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">Stable Diffusion Active</span>
+                    <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">आर्ट स्टूडियो मेकर</h2>
+                    <p class="text-sm text-slate-400">जो भी फोटो चाहिए, इंग्लिश में लिखें (जैसे: "3d cute teddy bear cyberpunk style")।</p>
+                </div>
                 
-                <div class="action-btns">
-                    <button class="copy-action-btn" id="copyBtn" onclick="copyToClipboard()"><i class="fa-regular fa-copy"></i> Copy Link</button>
-                    <button class="whatsapp-btn" onclick="shareSocial('wa')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
-                    <button class="insta-btn" onclick="shareSocial('ig')"><i class="fa-brands fa-instagram"></i> Instagram</button>
-                    <button class="fb-btn" onclick="shareSocial('fb')"><i class="fa-brands fa-facebook"></i> Facebook</button>
-                    <button class="twitter-btn" onclick="shareSocial('tw')"><i class="fa-brands fa-x-twitter"></i> X / Twitter</button>
+                <div class="space-y-3">
+                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: क्या इमेज बनानी है? (AI Prompt)</label>
+                    <div class="grid grid-cols-1 gap-3">
+                        <input type="text" id="ai-prompt" placeholder="उदा: A beautiful 3D neon heart, high quality..." class="p-3.5 glass-input text-sm rounded-xl w-full">
+                    </div>
+                    
+                    <!-- 🎯 असली वर्किंग AI जनरेट बटन -->
+                    <button id="ai-gen-btn" onclick="generateRealAIArt()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-3.5 rounded-xl text-xs transition shadow-md cursor-pointer flex justify-center items-center gap-2">
+                        <span>🎨 असली AI फोटो जनरेट करें (Stable Diffusion)</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 2: पीछे का सीक्रेट मैसेज</label>
+                        <input type="text" id="card-message" oninput="updatePreviewBack()" placeholder="यहाँ अपना गुप्त संदेश लिखें..." class="w-full p-3.5 glass-input text-sm rounded-xl">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 3: सुरक्षा लॉक पासवर्ड</label>
+                        <input type="password" id="card-password" placeholder="पासवर्ड बनाएं..." class="w-full p-3.5 glass-input text-sm rounded-xl">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 4: बॉर्डर फ्रेम थीम चुनें</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                        <button onclick="setTheme('lemon')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-yellow-300 to-yellow-500 text-slate-900 shadow transform hover:scale-105 transition">Gold</button>
+                        <button onclick="setTheme('peri')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow transform hover:scale-105 transition">Indigo</button>
+                        <button onclick="setTheme('rose')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow transform hover:scale-105 transition">Rose</button>
+                        <button onclick="setTheme('birthday')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow transform hover:scale-105 transition">Orange</button>
+                        <button onclick="setTheme('love')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-rose-500 to-red-600 text-white shadow transform hover:scale-105 transition">❤ Love</button>
+                        <button onclick="setTheme('festival')" class="p-2.5 rounded-xl font-bold text-xs bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow transform hover:scale-105 transition">Festival</button>
+                    </div>
+                </div>
+
+                <button id="publish-btn" onclick="publishCardToServer()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-base font-bold p-4 rounded-xl shadow-lg cursor-pointer">
+                    🚀 लाइव लिंक जेनरेट करें
+                </button>
+                
+                <div id="link-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl space-y-2">
+                    <p class="font-bold text-xs text-emerald-400">✨ आपका कार्ड लाइव हो गया है! लिंक कॉपी करें:</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="share-url-output" readonly class="flex-1 bg-black/30 p-2.5 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700">
+                        <button onclick="copyLink()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 rounded-lg text-xs transition cursor-pointer">Copy</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <script>
-        let globalPassword = "";
-        let finalImageSource = ""; 
-        let imageMode = "upload";
-        let generatedLinkUrl = "";
-
-        function flipCard() { document.getElementById('mainCard').classList.toggle('flipped'); }
-        function switchTab(type) {
-            imageMode = type;
-            document.getElementById('uploadSection').classList.toggle('hidden', type !== 'upload');
-            document.getElementById('aiSection').classList.toggle('hidden', type !== 'ai');
-            document.getElementById('tabUploadBtn').classList.toggle('active', type === 'upload');
-            document.getElementById('tabAiBtn').classList.toggle('active', type === 'ai');
-        }
-
-        // 📁 क्लाउड अपलोड
-        function uploadToCloud() {
-            const file = document.getElementById('imageUploader').files[0];
-            if (!file) return;
-            const loading = document.getElementById('uploadLoading');
-            loading.style.display = 'block';
-
-            const formData = new FormData();
-            formData.append("file", file);
-
-            fetch("https://tmpfiles.org/api/v1/upload", { method: "POST", body: formData })
-            .then(res => res.json())
-            .then(data => {
-                let rawUrl = data.data.url; 
-                finalImageSource = rawUrl.replace("tmpfiles.org/", "tmpfiles.org/dl/");
-                displayImage(finalImageSource);
-                loading.style.display = 'none';
-            })
-            .catch(() => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    finalImageSource = e.target.result;
-                    displayImage(finalImageSource);
-                    loading.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function displayImage(src) {
-            const img = document.getElementById('frontImage');
-            img.src = src;
-            img.classList.remove('hidden');
-            document.getElementById('frontPlaceholder').classList.add('hidden');
-        }
-
-        // ✨ AI जनरेशन
-        function generateAIImage() {
-            let text = document.getElementById('aiPrompt').value.trim();
-            if (!text) { alert("कुछ लिखिए!"); return; }
-            const loading = document.getElementById('aiLoading');
-            loading.style.display = 'block';
-
-            let englishPrompt = text;
-            const dictionary = {
-                "ladka": "boy", "ladki": "girl", "sher": "lion", "gadi": "car", "gaddi": "car",
-                "rota": "crying", "sad": "sad mood", "khush": "happy", "pahar": "mountain", 
-                "barish": "rain", "dil": "heart shape", "cycle": "bicycle"
-            };
-
-            Object.keys(dictionary).forEach(key => {
-                let reg = new RegExp(key, "g");
-                englishPrompt = englishPrompt.toLowerCase().replace(reg, dictionary[key]);
-            });
-
-            const randomSeed = Math.floor(Math.random() * 99999);
-            finalImageSource = `https://image.pollinations.ai/p/${encodeURIComponent(englishPrompt)}?width=320&height=380&seed=${randomSeed}&model=flux&nologo=true`;
-
-            const temp = new Image();
-            temp.src = finalImageSource;
-            temp.onload = function() {
-                displayImage(finalImageSource);
-                loading.style.display = 'none';
-            };
-        }
-
-        // 🔗 लिंक जनरेटर
-        function generateShareableLink() {
-            const msg = document.getElementById('msgInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            if (!finalImageSource) { alert("पहले फोटो सेट करें!"); return; }
-            if (!msg || !pass) { alert("संदेश और पासवर्ड भरें!"); return; }
-
-            const pack = {
-                img: btoa(encodeURIComponent(finalImageSource)),
-                msg: btoa(encodeURIComponent(msg)),
-                pas: btoa(encodeURIComponent(pass))
-            };
-
-            generatedLinkUrl = `${window.location.href.split('?')[0]}?card=${btoa(encodeURIComponent(JSON.stringify(pack)))}`;
-            document.getElementById('finalLink').innerText = generatedLinkUrl;
-            document.getElementById('copyBtn').innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link';
-            document.getElementById('shareResult').classList.remove('hidden');
-        }
-
-        function copyToClipboard() {
-            if (!generatedLinkUrl) return;
-            navigator.clipboard.writeText(generatedLinkUrl).then(() => {
-                const copyBtn = document.getElementById('copyBtn');
-                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied! 👍';
-                setTimeout(() => { copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link'; }, 2000);
-            });
-        }
-
-        // 🌐 अट्रैक्टिव टेक्स्ट बूस्टर के साथ मास्टर सोशल शेयरिंग लॉजिक
-        function shareSocial(platform) {
-            if (!generatedLinkUrl) return;
-            
-            // 🔥 यह धमाकेदार टेक्स्ट सामने वाले को क्लिक करने पर मजबूर कर देगा!
-            const messageText = `🎁 *आपके लिए एक सीक्रेट 3D सरप्राइज कार्ड आया है!* \n\n🔒 इसके अंदर एक बहुत ही सुंदर फोटो और गुप्त संदेश छुपाया गया है। \n\n👇 देखने के लिए अभी नीचे दिए गए लिंक को खोलें:\n🔗 ${generatedLinkUrl}`;
-            
-            if (platform === 'wa') {
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`, '_blank');
-            } else if (platform === 'fb') {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(generatedLinkUrl)}`, '_blank');
-            } else if (platform === 'tw') {
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(messageText)}`, '_blank');
-            } else if (platform === 'ig') {
-                copyToClipboard();
-                alert("🔗 धमाकेदार लिंक कॉपी कर लिया गया है! अब आप इसे सीधे अपने Instagram Story या DM में पेस्ट करके दोस्तों को चौंका सकते हैं।");
-            }
-        }
-
-        function unlockMessage() {
-            const entered = document.getElementById('viewPassword').value.trim();
-            if (btoa(encodeURIComponent(entered)) === globalPassword) {
-                document.getElementById('secureScreen').classList.add('hidden');
-                document.getElementById('messageScreen').classList.remove('hidden');
-            } else { alert("गलत पासवर्ड!"); }
-        }
-
-        window.onload = function() {
-            const cardParam = new URLSearchParams(window.location.search).get('card');
-            if (cardParam) {
-                document.getElementById('editorForm').classList.add('hidden');
-                try {
-                    const data = JSON.parse(decodeURIComponent(atob(cardParam)));
-                    displayImage(decodeURIComponent(atob(data.img)));
-                    globalPassword = data.pas;
-                    document.getElementById('secretText').innerText = decodeURIComponent(atob(data.msg));
-                } catch (e) { alert("लिंक इनवैलिड है।"); }
-            }
-        }
-    </script>
-</body>
-</html>
+            <!-- UNLOCK PANEL -->
+            <div id="unlock-panel" class="hidden space-y-6">
+                <div>
+                    <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/20">Secret Content</span>
+                    <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">सुरक्षित 3D संदेश बॉक्स</h2>
+                    <p class="text-sm text-slate-400">इस गुप्त कार्ड को अनलॉक करने के लिए पासवर्ड डालें।</p>
+                </div>
+                <div class="space-y-3">
