@@ -15,8 +15,8 @@
     <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://jsdelivr.net"></script>
     
-    <!-- 🤖 Puter.js SDK - मुफ्त में बिना API Key के Stable Diffusion AI चलाने के लिए -->
-    <script src="https://puter.com"></script>
+    <!-- 🤖 Puter.js SDK - मुफ्त में बिना API Key के असली AI चलाने के लिए -->
+    <script src="https://js.puter.com/v2/"></script>
 
     <style>
         body { 
@@ -67,12 +67,12 @@
         }
         .card-back { transform: rotateY(180deg); padding: 28px; justify-content: space-between; background: #0f172a; }
         
-        .theme-lemon { background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(254,240,138,0.4)); }
-        .theme-peri { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(199,210,254,0.4)); }
-        .theme-rose { background: linear-gradient(135deg, rgba(219,39,119,0.2), rgba(251,207,232,0.4)); }
-        .theme-birthday { background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(255,237,213,0.4)); }
-        .theme-love { background: linear-gradient(135deg, rgba(225,29,72,0.2), rgba(255,228,230,0.4)); }
-        .theme-festival { background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(250,232,255,0.4)); }
+        .theme-lemon { border: 4px solid #eab308; box-shadow: 0 0 20px rgba(234,179,8,0.3); }
+        .theme-peri { border: 4px solid #6366f1; box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+        .theme-rose { border: 4px solid #db2777; box-shadow: 0 0 20px rgba(219,39,119,0.3); }
+        .theme-birthday { border: 4px solid #f97316; box-shadow: 0 0 20px rgba(249,115,22,0.3); }
+        .theme-love { border: 4px solid #e11d48; box-shadow: 0 0 20px rgba(225,29,72,0.3); }
+        .theme-festival { border: 4px solid #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.3); }
     </style>
 </head>
 <body class="p-4 md:p-8 flex flex-col justify-between items-center min-h-screen" onload="checkAppMode()">
@@ -96,20 +96,28 @@
             <!-- CREATOR SECTION -->
             <div id="creator-panel" class="space-y-6">
                 <div>
-                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">Stable Diffusion Active</span>
+                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-indigo-500/20">Stable Diffusion Pro Engine</span>
                     <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">आर्ट स्टूडियो मेकर</h2>
-                    <p class="text-sm text-slate-400">जो भी फोटो चाहिए, इंग्लिश में लिखें (जैसे: "3d cute teddy bear cyberpunk style")।</p>
+                    <p class="text-sm text-slate-400">जो भी फोटो चाहिए, इंग्लिश में लिखें (जैसे: "cute teddy bear cyberpunk style")।</p>
                 </div>
                 
                 <div class="space-y-3">
-                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: क्या इमेज बनानी है? (AI Prompt)</label>
-                    <div class="grid grid-cols-1 gap-3">
-                        <input type="text" id="ai-prompt" placeholder="उदा: A beautiful 3D neon heart, high quality..." class="p-3.5 glass-input text-sm rounded-xl w-full">
+                    <label class="block font-bold text-xs text-indigo-300 uppercase tracking-wider">कदम 1: नाम या भावना लिखें (AI Prompt)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input type="text" id="ai-prompt" placeholder="उदा: Rahul, Priya, Happy Birthday..." class="sm:col-span-2 p-3.5 glass-input text-sm rounded-xl w-full">
+                        <select id="emoji-select" class="p-3.5 glass-input text-sm rounded-xl bg-slate-900 text-white cursor-pointer">
+                            <option value="❤️ Red Heart">❤️ प्यार (Love)</option>
+                            <option value="😇 Cute Smiley Face">😇 कार्टून स्माइल (Cute)</option>
+                            <option value="🧸 3D Fluffy Teddy Bear">🧸 टेडी बियर (Teddy)</option>
+                            <option value="🎂 Birthday Cake with Candles">🎂 जन्मदिन (Birthday)</option>
+                            <option value="😡 Angry Monster Ghost">😡 गुस्सा (Angry)</option>
+                            <option value="🐱 Cute 3D Cartoon Cat">🐱 बिल्ली कार्टून (Cat)</option>
+                        </select>
                     </div>
                     
-                    <!-- 🎯 असली वर्किंग AI जनरेट बटन -->
-                    <button id="ai-gen-btn" onclick="generateRealAIArt()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-3.5 rounded-xl text-xs transition shadow-md cursor-pointer flex justify-center items-center gap-2">
-                        <span>🎨 असली AI फोटो जनरेट करें (Stable Diffusion)</span>
+                    <!-- 🎯 100% सुधारित वर्किंग AI जनरेट बटन -->
+                    <button id="ai-gen-btn" onclick="generateRealAIArt()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold p-4 rounded-xl text-xs transition shadow-md cursor-pointer">
+                        🎨 असली AI फोटो जनरेट करें (Stable Diffusion)
                     </button>
                 </div>
 
@@ -149,11 +157,3 @@
                 </div>
             </div>
 
-            <!-- UNLOCK PANEL -->
-            <div id="unlock-panel" class="hidden space-y-6">
-                <div>
-                    <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/20">Secret Content</span>
-                    <h2 class="text-2xl font-extrabold text-white mt-2 mb-1">सुरक्षित 3D संदेश बॉक्स</h2>
-                    <p class="text-sm text-slate-400">इस गुप्त कार्ड को अनलॉक करने के लिए पासवर्ड डालें।</p>
-                </div>
-                <div class="space-y-3">
