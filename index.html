@@ -9,10 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D PIC STUDIO</title>
     
-    <!-- Google Fonts & Tailwind CSS -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ⚡ फिक्स्ड Tailwind CSS CDN (इसे सही तरीके से लोड करने के लिए बदला गया है) -->
     <script src="https://tailwindcss.com"></script>
 
     <style>
@@ -52,7 +54,7 @@
 
     <div class="w-full max-w-md flex flex-col items-center space-y-6">
         
-        <!-- 🖼️ ऊपर का बड़ा फोटो डिस्प्ले एरिया (फोटो यहाँ दिखेगी) -->
+        <!-- 🖼️ ऊपर का बड़ा फोटो डिस्प्ले एरिया -->
         <div class="photo-box-preview flex flex-col items-center justify-center p-6 text-center relative overflow-hidden shadow-2xl">
             <!-- अपलोडेड या जनरेटेड इमेज लेयर -->
             <img id="main-display-img" class="absolute inset-0 w-full h-full object-cover hidden z-0">
@@ -73,28 +75,22 @@
             <div class="space-y-2.5">
                 <label class="block text-xs font-bold tracking-wide text-slate-400 uppercase">1. फोटो का तरीका</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <!-- गैलरी अपलोड बटन (Active State) -->
+                    <!-- गैलरी अपलोड बटन -->
                     <button id="tab-upload" onclick="switchMethod('upload')" class="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold p-3 rounded-xl text-xs shadow-md transition duration-200">
-                        <svg xmlns="http://w3.org" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5M5 19v-4a2 2 0 012-2h11a2 2 0 012 2v4a2 2 0 01-2 2H5z" />
-                        </svg>
                         गैलरी अपलोड
                     </button>
                     <!-- AI जनरेशन बटन -->
                     <button id="tab-ai" onclick="switchMethod('ai')" class="flex items-center justify-center gap-2 bg-[#222a3a] text-slate-300 font-bold p-3 rounded-xl text-xs transition duration-200 hover:bg-[#2b354a]">
-                        <svg xmlns="http://w3.org" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                        </svg>
                         AI जनरेशन
                     </button>
                 </div>
 
-                <!-- गतिशील इनपुट फ़ील्ड्स (Dynamic Inputs) -->
+                <!-- गतिशील इनपुट फ़ील्ड्स -->
                 <div id="method-container" class="pt-2">
                     <!-- डिफ़ॉल्ट: गैलरी फ़ाइल अपलोडर बटन -->
                     <input type="file" id="file-uploader" accept="image/*" onchange="loadLocalFile(event)" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#222a3a] file:text-white hover:file:bg-[#2b354a] cursor-pointer">
                     
-                    <!-- हिडन AI इनपुट बॉक्स (जब AI टैब खुलेगा तब दिखेगा) -->
+                    <!-- हिडन AI इनपुट बॉक्स -->
                     <div id="ai-input-box" class="hidden space-y-2">
                         <input type="text" id="ai-prompt-text" placeholder="इंग्लिश में लिखें क्या फोटो बनानी है..." class="w-full p-3 custom-input text-xs">
                         <button onclick="runMockAI()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold p-2.5 rounded-xl text-[11px] transition">🎨 प्रॉम्प्ट प्रीव्यू सेट करें</button>
@@ -116,10 +112,7 @@
 
             <!-- 🎯 मुख्य सबमिट बटन -->
             <button onclick="publishStudioCard()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-95 text-white text-xs font-bold p-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-                <svg xmlns="http://w3.org" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                छोटा share लिंक बनाएं
+                छोटा शेयर लिंक बनाएं
             </button>
             
             <!-- लाइव जनरेटेड लिंक आउटपुट कंटेनर -->
@@ -139,7 +132,6 @@
         let selectedMethod = 'upload';
         let finalImageBase64 = "";
 
-        // 🔄 अपलोड और AI टैब बटन स्विच करने का लॉजिक
         function switchMethod(method) {
             selectedMethod = method;
             const tabUpload = document.getElementById('tab-upload');
@@ -160,8 +152,36 @@
             }
         }
 
-        // 📸 लोकल गैलरी फ़ाइल लोड और डिस्प्ले करने का लॉजिक
         function loadLocalFile(event) {
             const file = event.target.files;
             if (file) {
                 const reader = new FileReader();
+                reader.onload = function(e) {
+                    finalImageBase64 = e.target.result;
+                    const displayImg = document.getElementById('main-display-img');
+                    displayImg.src = finalImageBase64;
+                    displayImg.classList.remove('hidden');
+                    document.getElementById('placeholder-content').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function runMockAI() {
+            const prompt = document.getElementById('ai-prompt-text').value;
+            if(!prompt) return alert("कृपया प्रॉम्प्ट टाइप करें!");
+            finalImageBase64 = "AI_PROMPT_MODE:" + prompt;
+            alert("🎯 प्रॉम्प्ट सेव हो गया है! लिंक बनाने के लिए नीचे बढ़ें।");
+        }
+
+        async function publishStudioCard() {
+            const message = document.getElementById('secret-message').value;
+            const password = document.getElementById('card-password').value;
+
+            if(!finalImageBase64) return alert("❌ पहले कदम 1 में कोई फ़ोटो या AI प्रॉम्प्ट चुनें!");
+            if(!message || !password) return alert("❌ चिठ्ठी and पासवर्ड दोनों भरना आवश्यक है!");
+
+            try {
+                const res = await fetch(`${API_URL}/api/cards`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
