@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secret Share</title>
+<title>Secret Share - Backend Database Edition</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', sans-serif;}
   body{
@@ -15,123 +16,50 @@
     flex-direction: column;
     align-items: center;
   }
-.time-bar{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    margin-bottom: 30px;
-    opacity: 0.8;
+  .time-bar{
+    width: 100%; max-width: 350px; display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 30px; opacity: 0.8;
   }
-.photo-box{
-    width: 100%;
-    max-width: 350px;
-    height: 300px;
-    background: #1e293b;
-    border-radius: 20px;
-    border: 2px dashed #334155;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 25px;
-    overflow: hidden;
-    position: relative;
+  .photo-box{
+    width: 100%; max-width: 350px; height: 300px; background: #1e293b; border-radius: 20px; border: 2px dashed #334155;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; overflow: hidden; position: relative;
   }
-.photo-box img{width: 100%; height: 100%; object-fit: cover; display: none;}
-.photo-box svg{width: 50px; height: 50px; fill: #64748b; margin-bottom: 10px;}
-.photo-box p{color: #94a3b8; font-size: 16px; text-align: center;}
-.loader{
-    display: none;
-    width: 40px;
-    height: 40px;
-    border: 4px solid #334155;
-    border-top: 4px solid #8b5cf6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  .photo-box img{width: 100%; height: 100%; object-fit: cover; display: none;}
+  .photo-box svg{width: 50px; height: 50px; fill: #64748b; margin-bottom: 10px;}
+  .photo-box p{color: #94a3b8; font-size: 16px; text-align: center; padding: 0 10px;}
+  .loader{
+    display: none; width: 40px; height: 40px; border: 4px solid #334155; border-top: 4px solid #8b5cf6; border-radius: 50%;
+    animation: spin 1s linear infinite; position: absolute;
   }
- @keyframes spin{0%{transform: rotate(0deg);} 100%{transform: rotate(360deg);}}
+  @keyframes spin{0%{transform: rotate(0deg);} 100%{transform: rotate(360deg);}}
 
-.card{
-    background: #1e293b;
-    border-radius: 20px;
-    padding: 20px;
-    width: 100%;
-    max-width: 350px;
+  .card{ background: #1e293b; border-radius: 20px; padding: 20px; width: 100%; max-width: 350px; }
+  .section { margin-bottom: 20px; }
+  .section label{ display: block; font-size: 14px; margin-bottom: 8px; color: #cbd5e1; font-weight: 600; }
+  .btn-group{display: flex; gap: 10px; margin-bottom: 12px;}
+  .btn{
+    flex: 1; padding: 12px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold;
   }
-.section{margin-bottom: 20px;}
-.section label{
-    display: block;
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: #cbd5e1;
-  }
-.btn-group{display: flex; gap: 10px; margin-bottom: 12px;}
-.btn{
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-.btn-active{background: #6366f1; color: white;}
-.btn-inactive{background: #334155; color: #94a3b8;}
+  .btn-active{background: #6366f1; color: white;}
+  .btn-inactive{background: #334155; color: #94a3b8;}
 
-  input[type="file"]{
-    width: 100%;
-    padding: 10px;
-    background: #0f172a;
-    border: 1px dashed #475569;
-    border-radius: 10px;
-    color: #94a3b8;
-    cursor: pointer;
-  }
-  textarea, input[type="password"], input[type="text"]{
-    width: 100%;
-    padding: 12px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-  }
+  input[type="file"]{ width: 100%; padding: 10px; background: #0f172a; border: 1px dashed #475569; border-radius: 10px; color: #94a3b8; cursor: pointer; }
+  textarea, input[type="password"], input[type="text"]{ width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
   textarea{resize: vertical; min-height: 60px;}
   textarea::placeholder, input::placeholder{color: #64748b;}
 
-.share-btn{
-    width: 100%;
-    padding: 15px;
-    background: #8b5cf6;
-    border: none;
-    border-radius: 15px;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
+  .share-btn{
+    width: 100%; padding: 15px; background: #8b5cf6; border: none; border-radius: 15px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;
   }
-.share-btn:hover{opacity: 0.9;}
-.generate-btn{
-    width: 100%;
-    padding: 12px;
-    background: #6366f1;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 8px;
-  }
+  .generate-btn{ width: 100%; padding: 12px; background: #6366f1; border: none; border-radius: 10px; color: white; font-size: 14px; cursor: pointer; margin-top: 8px; font-weight: bold; }
+  .hidden { display: none !important; }
+
+  .share-section { background: #065f46; padding: 15px; border-radius: 15px; margin-top: 20px; text-align: center; border: 1px solid #10b981; width: 100%; max-width: 350px; }
+  .share-link { background: #022c22; padding: 10px; border-radius: 8px; word-break: break-all; margin-top: 8px; font-size: 13px; border: 1px dashed #34d399; color: #34d399; margin-bottom: 12px; max-height: 60px; overflow-y: auto; }
+  .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .copy-btn-main { background: #2563eb; color: white; grid-column: span 2; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
+  .social-btn { border: none; padding: 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 13px;}
+  .wa-btn { background: #22c55e; }
+  .ig-btn { background: linear-gradient(45deg, #f09433 0%, #dc2743 50%, #bc1888 100%); }
 </style>
 </head>
 <body>
@@ -148,48 +76,53 @@
   <img id="previewImg" alt="preview">
 </div>
 
-<div class="card">
+<!-- 📝 मेकर फॉर्म -->
+<div class="card" id="creatorCard">
   <div class="section">
     <label>1. फोटो का तरीका</label>
     <div class="btn-group">
       <button class="btn btn-active" id="uploadBtn" onclick="selectMode('upload')">📁 गैलरी अपलोड</button>
       <button class="btn btn-inactive" id="aiBtn" onclick="selectMode('ai')">✨ AI जनरेशन</button>
     </div>
-
-    <div id="uploadSection">
-      <input type="file" id="fileInput" accept="image/*">
-    </div>
-
+    <div id="uploadSection"><input type="file" id="fileInput" accept="image/*" onchange="uploadLocalImage()"></div>
     <div id="aiSection" style="display:none;">
-      <input type="text" id="aiPrompt" placeholder="AI को बताओ कैसी image चाहिए... ex: sunset over mountains">
+      <input type="text" id="aiPrompt" placeholder="जैसे: red car on mountain...">
       <button class="generate-btn" onclick="generateAI()">🎨 Image Generate करो</button>
-      <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Note: Abhi demo hai. Real AI ke liye API key add karni padegi</p>
     </div>
   </div>
+  <div class="section"><label>2. सीक्रेट संदेश</label><textarea id="secretMsg" placeholder="चिट्ठी यहाँ लिखें..."></textarea></div>
+  <div class="section"><label>3. पासवर्ड</label><input type="password" id="cardPassword" placeholder="पासवर्ड चुनें"></div>
+  <button class="share-btn" onclick="generateLink()"><i class="fa-solid fa-cloud-arrow-up"></i> डेटाबेस में सेव करें और लिंक बनाएं</button>
+</div>
 
-  <div class="section">
-    <label>2. सीक्रेट संदेश</label>
-    <textarea placeholder="चिट्ठी यहाँ लिखें..."></textarea>
+<!-- 🔒 रिसीवर मोड -->
+<div class="card hidden" id="receiverCard">
+  <div id="lockScreen">
+    <div class="section" style="text-align: center;">
+      <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-lock" style="color: #f43f5e;"></i> यह संदेश लॉक है</h3>
+      <input type="password" id="openPassword" placeholder="पासवर्ड यहाँ लिखें">
+      <button class="generate-btn" style="background: #ec4899; margin-top: 15px;" onclick="verifyAndUnlock()">🔓 अनलॉक करें</button>
+    </div>
   </div>
-
-  <div class="section">
-    <label>3. पासवर्ड</label>
-    <input type="password" placeholder="पासवर्ड चुनें">
+  <div id="contentScreen" class="hidden" style="text-align: center;">
+    <h3 style="color: #a5b4fc; margin-bottom: 10px;"><i class="fa-solid fa-envelope-open-text"></i> गुप्त संदेश:</h3>
+    <p id="unlockedMessageText" style="font-size: 16px; color: #f43f5e; font-weight: bold; background: #0f172a; padding: 15px; border-radius: 10px;"></p>
   </div>
+</div>
 
-  <button class="share-btn" onclick="generateLink()">🔗 छोटा शेयर लिंक बनाएं</button>
+<div id="shareResult" class="share-section hidden">
+  <strong>🎉 छोटा लिंक तैयार है (डेटाबेस सुरक्षित है):</strong>
+  <div class="share-link" id="finalLink"></div>
+  <div class="action-btns">
+    <button class="copy-btn-main" id="copyActionBtn" onclick="copyUrl()"><i class="fa-regular fa-copy"></i> Copy Link</button>
+    <button class="social-btn wa-btn" onclick="shareSocial('wa')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+    <button class="social-btn ig-btn" onclick="shareSocial('ig')"><i class="fa-brands fa-instagram"></i> Instagram</button>
+  </div>
 </div>
 
 <script>
-  let currentMode = 'upload';
+  let currentMode = 'upload'; let finalImageSource = ''; let generatedUrlStr = ''; let globalCardId = '';
 
-  // Time update
-  function updateTime(){
-    document.getElementById('time').innerText = new Date().toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit'});
-  }
-  updateTime(); setInterval(updateTime, 60000);
-
-  // Mode select
   function selectMode(mode){
     currentMode = mode;
     document.getElementById('uploadBtn').className = mode=='upload'? 'btn btn-active' : 'btn btn-inactive';
@@ -198,67 +131,111 @@
     document.getElementById('aiSection').style.display = mode=='ai'? 'block' : 'none';
   }
 
-  // File preview
-  document.getElementById('fileInput').addEventListener('change', function(e){
-    const file = e.target.files[0];
-    if(file){
-      showImage(URL.createObjectURL(file));
-    }
-  });
-
-  // AI Generate - Demo + API ready
-  async function generateAI(){
-    const prompt = document.getElementById('aiPrompt').value.trim();
-    if(!prompt){
-      alert('पहले prompt लिखो भाई 😅');
-      return;
-    }
-
+  function uploadLocalImage() {
+    const file = document.getElementById('fileInput').files[0]; if(!file) return;
     showLoader(true);
+    const formData = new FormData(); formData.append("file", file);
+    fetch("https://tmpfiles.org/api/v1/upload", { method: "POST", body: formData })
+    .then(res => res.json()).then(data => {
+        finalImageSource = data.data.url.replace("tmpfiles.org/", "tmpfiles.org/dl/");
+        showImage(finalImageSource); showLoader(false);
+    }).catch(() => { showLoader(false); alert("फोटो क्लाउड पर अपलोड नहीं हो पाई!"); });
+  }
 
-    // DEMO: 2 sec baad random image
-    // Real API ke liye niche wala commented code use karo
-    setTimeout(() => {
-      const randomImg = `https://picsum.photos/400/300?random=${Date.now()}`;
-      showImage(randomImg);
-      showLoader(false);
-    }, 2000);
-
-    /* REAL AI API CODE - HuggingFace Stable Diffusion example
-    const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer YOUR_API_KEY_HERE",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ inputs: prompt })
-    });
-    const blob = await response.blob();
-    const imgUrl = URL.createObjectURL(blob);
-    showImage(imgUrl);
-    showLoader(false);
-    */
+  async function generateAI(){
+    const prompt = document.getElementById('aiPrompt').value.trim(); if(!prompt){ alert('पहले prompt लिखो भाई!'); return; }
+    showLoader(true);
+    const seed = Math.floor(Math.random() * 99999);
+    finalImageSource = `https://image.pollinations.ai/p/${encodeURIComponent(prompt)}?width=400&height=300&seed=${seed}&model=flux&nologo=true`;
+    const imgTester = new Image(); imgTester.src = finalImageSource;
+    imgTester.onload = function() { showImage(finalImageSource); showLoader(false); }
   }
 
   function showImage(src){
-    document.getElementById('previewImg').src = src;
-    document.getElementById('previewImg').style.display = 'block';
-    document.getElementById('placeholderIcon').style.display = 'none';
-    document.getElementById('placeholderText').style.display = 'none';
+    const img = document.getElementById('previewImg'); img.src = src; img.style.display = 'block';
+    document.getElementById('placeholderIcon').style.display = 'none'; document.getElementById('placeholderText').style.display = 'none';
+  }
+  function showLoader(show){ document.getElementById('loader').style.display = show? 'block' : 'none'; }
+
+  // 🔗 असली जादू: डेटाबेस API से कनेक्ट करके छोटा लिंक बनाना
+  async function generateLink(){
+    const msg = document.getElementById('secretMsg').value.trim();
+    const pass = document.getElementById('cardPassword').value.trim();
+
+    if(!finalImageSource){ alert('कृपया पहले फोटो तैयार करें!'); return; }
+    if(!msg || !pass){ alert('संदेश और पासवर्ड भरें!'); return; }
+
+    showLoader(true);
+
+    // बैकएंड को डेटा भेजना
+    try {
+      const response = await fetch('/api/cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageSrc: finalImageSource, message: msg, password: pass })
+      });
+      const result = await response.json();
+      showLoader(false);
+
+      if(result.success) {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        generatedUrlStr = `${cleanUrl}?id=${result.cardId}`; // कितना छोटा और सुंदर लिंक बना!
+        
+        document.getElementById('finalLink').innerText = generatedUrlStr;
+        document.getElementById('shareResult').classList.remove('hidden');
+        document.getElementById('shareResult').scrollIntoView({ behavior: 'smooth' });
+      } else { alert("Error: " + result.error); }
+    } catch (e) { showLoader(false); alert("सर्वर से कनेक्शन फेल हो गया!"); }
   }
 
-  function showLoader(show){
-    document.getElementById('loader').style.display = show? 'block' : 'none';
-    document.getElementById('placeholderIcon').style.display = show? 'none' : 'block';
-    document.getElementById('placeholderText').style.display = show? 'none' : 'block';
-    document.getElementById('previewImg').style.display = 'none';
+  // 🔓 पासवर्ड चेक करके बैकएंड से डेटा अनलॉक करना
+  async function verifyAndUnlock() {
+    const entered = document.getElementById('openPassword').value.trim();
+    if(!entered) return;
+
+    try {
+      const response = await fetch('/api/cards/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId: globalCardId, password: entered })
+      });
+      const result = await response.json();
+
+      if(result.success) {
+        showImage(result.imageSrc); // फोटो अनलॉक करो
+        document.getElementById('unlockedMessageText').innerText = result.message; // मैसेज अनलॉक करो
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('contentScreen').classList.remove('hidden');
+      } else { alert("❌ " + result.error); }
+    } catch (e) { alert("सर्वर एरर!"); }
   }
 
-  // Link generate dummy
-  function generateLink(){
-    alert('लिंक बन गया! Backend जोड़ने पर यहाँ short link generate होगा।');
+  function copyUrl() {
+    navigator.clipboard.writeText(generatedUrlStr).then(() => {
+        const btn = document.getElementById('copyActionBtn'); btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link'; }, 2000);
+    });
+  }
+
+  function shareSocial(platform) {
+    if(!generatedUrlStr) return;
+    const txt = `🎁 *आपके लिए एक स्पेशल सीक्रेट सरप्राइज कार्ड आया है!* \n👇 अभी खोलें:\n🔗 ${generatedUrlStr}`;
+    if(platform === 'wa') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
+  }
+
+  // 🌐 पेज लोड पर चेक करना कि क्या यह किसी रिसीवर का लिंक है
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+
+    if(idParam) {
+        globalCardId = idParam;
+        document.getElementById('creatorCard').classList.add('hidden');
+        document.getElementById('receiverCard').classList.remove('hidden');
+        // शुरू में फोटो को छिपाकर लॉक रखें
+        document.getElementById('previewBox').style.display = 'none'; 
+    }
   }
 </script>
-
 </body>
 </html>
