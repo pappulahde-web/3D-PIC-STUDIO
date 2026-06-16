@@ -1,187 +1,264 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <script>
-        // ⚡ आपकी लाइव बैकएंड API का सटीक लिंक
-        const API_URL = 'https://onrender.com';
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D PIC STUDIO</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- ⚡ फिक्स्ड Tailwind CSS CDN (इसे सही तरीके से लोड करने के लिए बदला गया है) -->
-    <script src="https://tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Share</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', sans-serif;}
+  body{
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+.time-bar{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 30px;
+    opacity: 0.8;
+  }
+.photo-box{
+    width: 100%;
+    max-width: 350px;
+    height: 300px;
+    background: #1e293b;
+    border-radius: 20px;
+    border: 2px dashed #334155;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+    overflow: hidden;
+    position: relative;
+  }
+.photo-box img{width: 100%; height: 100%; object-fit: cover; display: none;}
+.photo-box svg{width: 50px; height: 50px; fill: #64748b; margin-bottom: 10px;}
+.photo-box p{color: #94a3b8; font-size: 16px; text-align: center;}
+.loader{
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #334155;
+    border-top: 4px solid #8b5cf6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+ @keyframes spin{0%{transform: rotate(0deg);} 100%{transform: rotate(360deg);}}
 
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #0b0f19;
-            color: #f8fafc;
-            min-height: 100vh;
-        }
-        .main-card-panel {
-            background-color: #161b26;
-            border-radius: 20px;
-        }
-        .custom-input {
-            background-color: #0d111a;
-            border: 1px solid #222c3f;
-            color: white;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-        .custom-input:focus {
-            border-color: #6366f1;
-            outline: none;
-        }
-        /* 3D Photo Display Box Preview */
-        .photo-box-preview {
-            background-color: #172030;
-            border: 2px dashed #2a374e;
-            border-radius: 20px;
-            height: 380px;
-            width: 100%;
-            max-width: 340px;
-        }
-    </style>
+.card{
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 350px;
+  }
+.section{margin-bottom: 20px;}
+.section label{
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #cbd5e1;
+  }
+.btn-group{display: flex; gap: 10px; margin-bottom: 12px;}
+.btn{
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+.btn-active{background: #6366f1; color: white;}
+.btn-inactive{background: #334155; color: #94a3b8;}
+
+  input[type="file"]{
+    width: 100%;
+    padding: 10px;
+    background: #0f172a;
+    border: 1px dashed #475569;
+    border-radius: 10px;
+    color: #94a3b8;
+    cursor: pointer;
+  }
+  textarea, input[type="password"], input[type="text"]{
+    width: 100%;
+    padding: 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+  }
+  textarea{resize: vertical; min-height: 60px;}
+  textarea::placeholder, input::placeholder{color: #64748b;}
+
+.share-btn{
+    width: 100%;
+    padding: 15px;
+    background: #8b5cf6;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+.share-btn:hover{opacity: 0.9;}
+.generate-btn{
+    width: 100%;
+    padding: 12px;
+    background: #6366f1;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+</style>
 </head>
-<body class="p-4 flex flex-col items-center justify-start sm:py-8">
+<body>
 
-    <div class="w-full max-w-md flex flex-col items-center space-y-6">
-        
-        <!-- 🖼️ ऊपर का बड़ा फोटो डिस्प्ले एरिया -->
-        <div class="photo-box-preview flex flex-col items-center justify-center p-6 text-center relative overflow-hidden shadow-2xl">
-            <!-- अपलोडेड या जनरेटेड इमेज लेयर -->
-            <img id="main-display-img" class="absolute inset-0 w-full h-full object-cover hidden z-0">
-            
-            <div id="placeholder-content" class="flex flex-col items-center justify-center space-y-3 z-10 text-slate-400">
-                <!-- गैलरी आइकॉन -->
-                <svg xmlns="http://w3.org" class="h-14 w-14 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H4a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p class="text-sm font-medium tracking-wide">फोटो यहाँ दिखेगी</p>
-            </div>
-        </div>
+<div class="time-bar">
+  <span id="time">12:19</span>
+  <span>Vo LTE 4G 📶 🔋72%</span>
+</div>
 
-        <!-- 📑 नीचे का मुख्य कस्टमाइज़र फॉर्म बॉक्स -->
-        <div class="main-card-panel w-full p-5 space-y-5 shadow-xl">
-            
-            <!-- 1. फोटो का तरीका सेलेक्टर्स -->
-            <div class="space-y-2.5">
-                <label class="block text-xs font-bold tracking-wide text-slate-400 uppercase">1. फोटो का तरीका</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <!-- गैलरी अपलोड बटन -->
-                    <button id="tab-upload" onclick="switchMethod('upload')" class="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold p-3 rounded-xl text-xs shadow-md transition duration-200">
-                        गैलरी अपलोड
-                    </button>
-                    <!-- AI जनरेशन बटन -->
-                    <button id="tab-ai" onclick="switchMethod('ai')" class="flex items-center justify-center gap-2 bg-[#222a3a] text-slate-300 font-bold p-3 rounded-xl text-xs transition duration-200 hover:bg-[#2b354a]">
-                        AI जनरेशन
-                    </button>
-                </div>
+<div class="photo-box" id="previewBox">
+  <svg id="placeholderIcon" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m1-2H4c-1.1 0-2.9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 9.86-3 3.87L9 13.14 6 17h12l-4.86-4.14z"/></svg>
+  <p id="placeholderText">फोटो यहाँ दिखेगी</p>
+  <div class="loader" id="loader"></div>
+  <img id="previewImg" alt="preview">
+</div>
 
-                <!-- गतिशील इनपुट फ़ील्ड्स -->
-                <div id="method-container" class="pt-2">
-                    <!-- डिफ़ॉल्ट: गैलरी फ़ाइल अपलोडर बटन -->
-                    <input type="file" id="file-uploader" accept="image/*" onchange="loadLocalFile(event)" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#222a3a] file:text-white hover:file:bg-[#2b354a] cursor-pointer">
-                    
-                    <!-- हिडन AI इनपुट बॉक्स -->
-                    <div id="ai-input-box" class="hidden space-y-2">
-                        <input type="text" id="ai-prompt-text" placeholder="इंग्लिश में लिखें क्या फोटो बनानी है..." class="w-full p-3 custom-input text-xs">
-                        <button onclick="runMockAI()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold p-2.5 rounded-xl text-[11px] transition">🎨 प्रॉम्प्ट प्रीव्यू सेट करें</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. सीक्रेट संदेश -->
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold tracking-wide text-slate-400 uppercase">2. सीक्रेट संदेश</label>
-                <textarea id="secret-message" rows="3" placeholder="चिठ्ठी यहाँ लिखें..." class="w-full p-3 custom-input text-xs resize-none"></textarea>
-            </div>
-
-            <!-- 3. पासवर्ड -->
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold tracking-wide text-slate-400 uppercase">3. पासवर्ड</label>
-                <input type="password" id="card-password" placeholder="पासवर्ड चुनें" class="w-full p-3 custom-input text-xs">
-            </div>
-
-            <!-- 🎯 मुख्य सबमिट बटन -->
-            <button onclick="publishStudioCard()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-95 text-white text-xs font-bold p-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-                छोटा शेयर लिंक बनाएं
-            </button>
-            
-            <!-- लाइव जनरेटेड लिंक आउटपुट कंटेनर -->
-            <div id="output-box" class="hidden bg-emerald-500/10 border border-emerald-500/20 p-3.5 rounded-xl space-y-2">
-                <p class="font-bold text-[11px] text-emerald-400">✨ आपका लिंक लाइव तैयार है:</p>
-                <div class="flex gap-2">
-                    <input type="text" id="final-link-url" readonly class="flex-1 bg-black/40 p-2 rounded-lg text-xs font-semibold text-slate-300 border border-slate-800 focus:outline-none">
-                    <button onclick="copyGeneratedUrl()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 rounded-lg text-xs transition cursor-pointer">Copy</button>
-                </div>
-            </div>
-
-        </div>
+<div class="card">
+  <div class="section">
+    <label>1. फोटो का तरीका</label>
+    <div class="btn-group">
+      <button class="btn btn-active" id="uploadBtn" onclick="selectMode('upload')">📁 गैलरी अपलोड</button>
+      <button class="btn btn-inactive" id="aiBtn" onclick="selectMode('ai')">✨ AI जनरेशन</button>
     </div>
 
-    <!-- JavaScript इंजन -->
-    <script>
-        let selectedMethod = 'upload';
-        let finalImageBase64 = "";
+    <div id="uploadSection">
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
 
-        function switchMethod(method) {
-            selectedMethod = method;
-            const tabUpload = document.getElementById('tab-upload');
-            const tabAi = document.getElementById('tab-ai');
-            const fileInput = document.getElementById('file-uploader');
-            const aiInputBox = document.getElementById('ai-input-box');
+    <div id="aiSection" style="display:none;">
+      <input type="text" id="aiPrompt" placeholder="AI को बताओ कैसी image चाहिए... ex: sunset over mountains">
+      <button class="generate-btn" onclick="generateAI()">🎨 Image Generate करो</button>
+      <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Note: Abhi demo hai. Real AI ke liye API key add karni padegi</p>
+    </div>
+  </div>
 
-            if (method === 'upload') {
-                tabUpload.className = "flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold p-3 rounded-xl text-xs shadow-md transition duration-200";
-                tabAi.className = "flex items-center justify-center gap-2 bg-[#222a3a] text-slate-300 font-bold p-3 rounded-xl text-xs transition duration-200 hover:bg-[#2b354a]";
-                fileInput.classList.remove('hidden');
-                aiInputBox.classList.add('hidden');
-            } else {
-                tabAi.className = "flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold p-3 rounded-xl text-xs shadow-md transition duration-200";
-                tabUpload.className = "flex items-center justify-center gap-2 bg-[#222a3a] text-slate-300 font-bold p-3 rounded-xl text-xs transition duration-200 hover:bg-[#2b354a]";
-                fileInput.classList.add('hidden');
-                aiInputBox.classList.remove('hidden');
-            }
-        }
+  <div class="section">
+    <label>2. सीक्रेट संदेश</label>
+    <textarea placeholder="चिट्ठी यहाँ लिखें..."></textarea>
+  </div>
 
-        function loadLocalFile(event) {
-            const file = event.target.files;
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    finalImageBase64 = e.target.result;
-                    const displayImg = document.getElementById('main-display-img');
-                    displayImg.src = finalImageBase64;
-                    displayImg.classList.remove('hidden');
-                    document.getElementById('placeholder-content').classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+  <div class="section">
+    <label>3. पासवर्ड</label>
+    <input type="password" placeholder="पासवर्ड चुनें">
+  </div>
 
-        function runMockAI() {
-            const prompt = document.getElementById('ai-prompt-text').value;
-            if(!prompt) return alert("कृपया प्रॉम्प्ट टाइप करें!");
-            finalImageBase64 = "AI_PROMPT_MODE:" + prompt;
-            alert("🎯 प्रॉम्प्ट सेव हो गया है! लिंक बनाने के लिए नीचे बढ़ें।");
-        }
+  <button class="share-btn" onclick="generateLink()">🔗 छोटा शेयर लिंक बनाएं</button>
+</div>
 
-        async function publishStudioCard() {
-            const message = document.getElementById('secret-message').value;
-            const password = document.getElementById('card-password').value;
+<script>
+  let currentMode = 'upload';
 
-            if(!finalImageBase64) return alert("❌ पहले कदम 1 में कोई फ़ोटो या AI प्रॉम्प्ट चुनें!");
-            if(!message || !password) return alert("❌ चिठ्ठी and पासवर्ड दोनों भरना आवश्यक है!");
+  // Time update
+  function updateTime(){
+    document.getElementById('time').innerText = new Date().toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit'});
+  }
+  updateTime(); setInterval(updateTime, 60000);
 
-            try {
-                const res = await fetch(`${API_URL}/api/cards`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+  // Mode select
+  function selectMode(mode){
+    currentMode = mode;
+    document.getElementById('uploadBtn').className = mode=='upload'? 'btn btn-active' : 'btn btn-inactive';
+    document.getElementById('aiBtn').className = mode=='ai'? 'btn btn-active' : 'btn btn-inactive';
+    document.getElementById('uploadSection').style.display = mode=='upload'? 'block' : 'none';
+    document.getElementById('aiSection').style.display = mode=='ai'? 'block' : 'none';
+  }
+
+  // File preview
+  document.getElementById('fileInput').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+      showImage(URL.createObjectURL(file));
+    }
+  });
+
+  // AI Generate - Demo + API ready
+  async function generateAI(){
+    const prompt = document.getElementById('aiPrompt').value.trim();
+    if(!prompt){
+      alert('पहले prompt लिखो भाई 😅');
+      return;
+    }
+
+    showLoader(true);
+
+    // DEMO: 2 sec baad random image
+    // Real API ke liye niche wala commented code use karo
+    setTimeout(() => {
+      const randomImg = `https://picsum.photos/400/300?random=${Date.now()}`;
+      showImage(randomImg);
+      showLoader(false);
+    }, 2000);
+
+    /* REAL AI API CODE - HuggingFace Stable Diffusion example
+    const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer YOUR_API_KEY_HERE",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt })
+    });
+    const blob = await response.blob();
+    const imgUrl = URL.createObjectURL(blob);
+    showImage(imgUrl);
+    showLoader(false);
+    */
+  }
+
+  function showImage(src){
+    document.getElementById('previewImg').src = src;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('placeholderIcon').style.display = 'none';
+    document.getElementById('placeholderText').style.display = 'none';
+  }
+
+  function showLoader(show){
+    document.getElementById('loader').style.display = show? 'block' : 'none';
+    document.getElementById('placeholderIcon').style.display = show? 'none' : 'block';
+    document.getElementById('placeholderText').style.display = show? 'none' : 'block';
+    document.getElementById('previewImg').style.display = 'none';
+  }
+
+  // Link generate dummy
+  function generateLink(){
+    alert('लिंक बन गया! Backend जोड़ने पर यहाँ short link generate होगा।');
+  }
+</script>
+
+</body>
+</html>
