@@ -1,102 +1,76 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '15mb' }));
+app.use(express.json());
 
-// इन-मेमोरी डेटाबेस (आप इसे MongoDB से बदल सकते हैं)
-const cardsDb = [];
-const usersDb = [];
+// फ्रंटएंड फाइलों को सर्व करने के लिए (index.html इसी फोल्डर में होनी चाहिए)
+app.use(express.static(path.join(__dirname, './')));
 
-// थीम्स कॉन्फ़िगरेशन
-const THEMES = ['lemon', 'peri', 'rose', 'birthday', 'love', 'festival'];
+// 🗄️ MongoDB Connection (आप Render Environment में अपनी Mongo URI डाल सकते हैं या सीधे यहाँ)
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://testuser:testpass@cluster.mongodb.net/secretshare?retryWrites=true&w=majority"; 
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("MongoDB Connected Successfully!"))
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
-// 1. कार्ड बनाना (Create Card)
+// 📝 Database Schema (डेटा को स्टोर करने का ढांचा)
+const CardSchema = new mongoose.Schema({
+  imageSrc: String,
+  message: String,
+  passwordHash: String, // सुरक्षा के लिए पासवर्ड
+  createdAt: { type: Date, default: Date.now, expires: 2592000 } // 30 दिन बाद अपने आप डिलीट (Auto Delete)
+});
+const Card = mongoose.model('Card', CardSchema);
+
+// 🚀 API 1: नया सीक्रेट कार्ड डेटाबेस में सेव करने के लिए
 app.post('/api/cards', async (req, res) => {
-    try {
-        const { imageData, message, password, theme, userId } = req.body;
-        if (!imageData || !message || !password) {
-            return res.status(400).json({ error: 'सभी जानकारी भरना अनिवार्य है।' });
-        }
-
-        const id = crypto.randomBytes(4).toString('hex'); // छोटा यूनीक ID
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const selectedTheme = THEMES.includes(theme) ? theme : 'lemon';
-
-        const newCard = {
-            id,
-            imageData,
-            message,
-            passwordHash: hashedPassword,
-            theme: selectedTheme,
-            userId: userId || null,
-            createdAt: new Date()
-        };
-
-        cardsDb.push(newCard);
-        return res.status(201).json({ id });
-    } catch (err) {
-        return res.status(500).json({ error: 'सर्वर एरर!' });
+  try {
+    const { imageSrc, message, password } = req.body;
+    if(!imageSrc || !message || !password) {
+      return res.status(400).json({ error: "सभी फील्ड भरना ज़रूरी है!" });
     }
-});
-
-// 2. कार्ड का बाहरी डेटा पाना (Get Card Metadata for View)
-app.get('/api/cards/:id', (req, res) => {
-    const card = cardsDb.find(c => c.id === req.params.id);
-    if (!card) return res.status(404).json({ error: 'कार्ड नहीं मिला।' });
-
-    return res.json({
-        id: card.id,
-        imageData: card.imageData,
-        theme: card.theme
+    
+    const newCard = new Card({
+      imageSrc: imageSrc,
+      message: message,
+      passwordHash: password // यहाँ साधारण पासवर्ड रख रहे हैं (फॉर बिगनर्स)
     });
+
+    await newCard.save();
+    res.json({ success: true, cardId: newCard._id });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error: कार्ड सेव नहीं हो पाया।" });
+  }
 });
 
-// 3. पासवर्ड जांचना और मैसेज दिखाना (Unlock Card)
-app.post('/api/cards/:id/unlock', async (req, res) => {
-    try {
-        const { password } = req.body;
-        const card = cardsDb.find(c => c.id === req.params.id);
-        
-        if (!card) return res.status(404).json({ error: 'कार्ड नहीं मिला।' });
-        const isMatch = await bcrypt.compare(password, card.passwordHash);
-        if (!isMatch) return res.status(401).json({ error: 'गलत पासवर्ड!' });
-
-        return res.json({ secretMessage: card.message });
-    } catch (err) {
-        return res.status(500).json({ error: 'वेरिफिकेशन फेल!' });
+// 🔓 API 2: सही पासवर्ड डालने पर कार्ड का डेटा भेजने के लिए
+app.post('/api/cards/unlock', async (req, res) => {
+  try {
+    const { cardId, password } = req.body;
+    const card = await Card.findById(cardId);
+    
+    if(!card) {
+      return res.status(404).json({ error: "यह कार्ड मौजूद नहीं है या एक्सपायर हो गया है!" });
     }
-});
 
-// 4. गूगल ऑथेंटिकेशन सिम्युलेटर (Google Auth)
-app.post('/api/auth/google', (req, res) => {
-    const { email, name, picture } = req.body;
-    if (!email) return res.status(400).json({ error: 'ईमेल जरूरी है।' });
-
-    let user = usersDb.find(u => u.email === email);
-    if (!user) {
-        user = { id: crypto.randomBytes(6).toString('hex'), email, name, picture };
-        usersDb.push(user);
+    if(card.passwordHash === password) {
+      // अगर पासवर्ड सही है, तो फोटो और मैसेज भेज दो
+      res.json({ success: true, imageSrc: card.imageSrc, message: card.message });
+    } else {
+      res.status(401).json({ error: "गलत पासवर्ड! दोबारा कोशिश करें।" });
     }
-    return res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "सर्वर एरर!" });
+  }
 });
 
-// 5. यूजर के बनाए गए पुराने कार्ड्स की गैलरी (User Gallery)
-app.get('/api/users/:userId/cards', (req, res) => {
-    const userCards = cardsDb.filter(c => c.userId === req.params.userId);
-    return res.json(userCards);
-});
-
-// स्टेटिक फाइल्स लोड करने के लिए (PWA सपोर्ट)
-app.use(express.static(path.join(__dirname, '/')));
+// 🌐 सिंगल पेज ऐप के लिए राउटिंग (अगर कोई डायरेक्ट लिंक खोलेगा तो index.html लोड होगी)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 सर्वर चालू है पोर्ट: http://localhost:${PORT}`));
-
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Backend Server running on port ${PORT}`));
